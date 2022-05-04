@@ -17,7 +17,14 @@ def _compress_image(x: np.ndarray, path: str, ctx: TestContext):
     im.write_spatial(path, qt=ctx.quality, dct_method=ctx.dct_method, flags=flags)
 
 def _decompress_image(path: str, ctx: TestContext):
-    pass
+    # chroma subsampling
+    flags = _flags[ctx.use_chroma_sampling]
+    # decompress
+    return jpeglib.read_spatial(path, dct_method=dct_method, flags=flags)
+
+def _read_jpeg(path: str, ctx: TestContext):
+    # read DCT
+    return jpeglib.read_dct(path)
 
 def run_test(dataset: np.ndarray, ctx: TestContext):
     # parse
@@ -42,6 +49,8 @@ def run_test(dataset: np.ndarray, ctx: TestContext):
         # decompress with single (arbitrary) version
         with jpeglib.version(ctx.v_arbitrary):
             decompressed = [
-                jpeglib.read_spatial(fname)
+                _read_jpeg(fname, ctx)
+                for j,fname in enumerate(fnames)
             ]
+            
 
