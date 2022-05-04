@@ -7,7 +7,10 @@ import tempfile
 import pandas as pd
 
 
-def run_baseline_decompression(vs_decomp: list[str], v_comp: str, dataset: np.array):
+def run_baseline(dataset: np.ndarray, ctx: TestContext()) -> pd.DataFrame:
+    sample_size, _, _, channels = dataset.shape
+    ctx.colorspace = cspaces[channels]
+
     images_rgb = {'comp_version': [], 'decomp_version': [], 'image': []}
 
     tmp = tempfile.NamedTemporaryFile()  # create temporary file

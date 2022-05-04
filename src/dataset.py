@@ -16,7 +16,7 @@ def get_dataset(db_path: Path, sample_size: int) -> List[str]:
     return random.sample(db_names, sample_size)
 
 
-def load_alaska_with_extrems(db_path: Path, sample_size: int, img_dimensions: Tuple[int, int]) -> np.array:
+def load_alaska_with_extrems(db_path: Path, sample_size: int, img_dimensions: Tuple[int, int]) -> np.ndarray:
 
     db_names = get_dataset(db_path, sample_size)
     checkerboard = get_checkerboards(img_dimensions, 3)
@@ -32,7 +32,7 @@ def load_alaska_with_extrems(db_path: Path, sample_size: int, img_dimensions: Tu
     return np.concatenate([db, checkerboard], axis=0)
 
 
-def load_boss_with_extrems(db_path: Path, sample_size: int, img_dimensions: Tuple[int, int]) -> np.array:
+def load_boss_with_extrems(db_path: Path, sample_size: int, img_dimensions: Tuple[int, int]) -> np.ndarray:
 
     db_names = get_dataset(db_path, sample_size)
     checkerboard = get_checkerboards(img_dimensions, 1)
