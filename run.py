@@ -36,6 +36,17 @@ def run_compression_tests(dataset: np.ndarray):
         dct = compression.run_test(dataset, ctx)
         compression.print_clusters(dct)
     print()
+    
+    # quality
+    print("--- Quality ---")
+    for quality in range(101):
+        ctx = TestContext()
+        ctx.quality = quality
+        print("Quality:", quality)
+        q = compression.run_test(dataset, ctx)
+        compression.add_print_grouped_clusters(dct, q)
+    compression.end_print_grouped_clusters()
+    print()
 
 
 if __name__ == "__main__":
