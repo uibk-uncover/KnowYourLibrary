@@ -44,7 +44,7 @@ def clusters(images: pd.DataFrame):
     
         # keep homogenous clusters
         if heterogenity == 0: break
-    return [[versions[i] for i in np.where(agnes.labels_ == cl)[0]] for cl in np.unique(agnes.labels_)]
+    return tuple(tuple(versions[i] for i in np.where(agnes.labels_ == cl)[0]) for cl in np.unique(agnes.labels_))
     #print(dct_method, k, "classes:", *[[versions[i] for i in np.where(agnes.labels_ == cl)[0]] for cl in np.unique(agnes.labels_)])
 
 def is_clustering_same(c1, c2):

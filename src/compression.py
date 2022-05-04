@@ -4,6 +4,7 @@ import jpeglib
 import numpy as np
 import pandas as pd
 from pathlib import Path
+import sys
 import tempfile
 from ._defs import *
 from . import mismatch
@@ -76,31 +77,26 @@ def print_clusters(clusters):
         print("| spatial", clusters.spatial)
 
 _joint = collections.OrderedDict()
-def _clusters_to_key(clusters):
-    return tuple(tuple(i for i in c) for c in clusters)
-def _key_to_clusters(key):
-    return list(list(i for i in c) for c in clusters)
 def add_print_grouped_clusters(clusters, identifier):
     """Call me with clusters and identifier of a call. I will keep track of it and print it nicely for you."""
     global _joint
     # is empty
     was_empty = len(_joint) == 0
     # add to joint
-    key = _clusters_to_key(clusters)
     if clusters not in _joint:
-        _joint[key] = [identifier]
+        _joint[clusters] = [identifier]
     else:
-        _joint[key].append(identifier)
+        _joint[clusters].append(identifier)
     # get the first
     k1 = next(iter(_joint))
-    print("First is", k1)
     # print legend
     if was_empty:
-        print(_key_to_clusters(k1), ":", end="")
+        print(k1, ":", end="")
     # print until empty
     while _joint[k1]:
         print(" ", _joint[k1][0], sep="", end="")
         _joint[k1] = _joint[k1][1:]
+    sys.stdout.flush()
     
 def end_print_grouped_clusters():
     """Call me when done with add_print_grouped_clusters."""
@@ -108,10 +104,13 @@ def end_print_grouped_clusters():
     for k in _joint:
         # skip empty (first)
         if not _joint[k]:
+            print()
             continue
         # print legend
-        print(_key_to_clusters(k1), ":", end="")
+        print(k, ":", end="")
         # print until empty
-        while _joint[k1]:
-            print(" ", _joint[k1][0], sep="", end="")
-            _joint[k1] = _joint[k1][1:]
+        while _joint[k]:
+            print(" ", _joint[k][0], sep="", end="")
+            _joint[k] = _joint[k][1:]
+        print()
+    _joint = collections.OrderedDict()
