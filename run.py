@@ -1,13 +1,12 @@
 
+from src import TestContext
+from src import compression
 from src.simd import *
 from src.dataset import *
 from pathlib import Path
 import sys
 sys.path.append('.')
-from src import compression
-from src import TestContext
-from src.dataset import *
-from src.simd import *
+
 
 def run_compression_tests(dataset: np.ndarray):
     # intro
@@ -21,16 +20,16 @@ def run_compression_tests(dataset: np.ndarray):
     print("is turbo faster in decompression than 6b:", end="")
     p = is_turbo_faster_than_6b(dataset)
     print(" p-value", p.compression, end="\n\n")
-    
+
     # baseline
     print("--- baseline ---")
     baseline = compression.run_test(dataset, TestContext())
     compression.print_clusters(baseline)
     print()
-    
+
     # DCT methods
     print("--- DCT methods ---")
-    for dct_method in ['JDCT_ISLOW','JDCT_FLOAT','JDCT_IFAST']:
+    for dct_method in ['JDCT_ISLOW', 'JDCT_FLOAT', 'JDCT_IFAST']:
         ctx = TestContext()
         ctx.dct_method = dct_method
         print("Method:", dct_method)
@@ -42,14 +41,14 @@ def run_compression_tests(dataset: np.ndarray):
 if __name__ == "__main__":
     # get datasets
     db_path = Path.home() / 'Datasets'
-    image_dimensions = Tuple(512, 512)
+    image_dimensions = (512, 512)
     sample_size = 10
 
     alaska = load_alaska_with_extrems(
-        db_path / 'ALASKA_v2_TIFF_256_COLOR', sample_size, Tuple(256, 256))
-    boss = load_boss_with_extrems(
-        db_path / 'BOSS_raw' / 'BOSS_from_raw', sample_size, image_dimensions)
-    
+        db_path / 'ALASKA_v2_TIFF_256_COLOR', sample_size, (256, 256))
+    # boss = load_boss_with_extrems(
+    #    db_path / 'BOSS_raw' / 'BOSS_from_raw', sample_size, image_dimensions)
+
     # get datasets
     #alaska = get_color_dataset(10)
     #boss = get_grayscale_dataset(10)

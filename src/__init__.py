@@ -5,4 +5,3 @@ from . import compression
 from . import dataset
 from . import mismatch
 from . import simd
-
