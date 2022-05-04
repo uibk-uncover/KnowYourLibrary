@@ -7,6 +7,53 @@ from pathlib import Path
 import sys
 sys.path.append('.')
 
+# sampling factor
+samp_factors = [
+    ((1,1),(1,1),(1,1)), # 4:4:4
+    # ((1,2),(1,2),(1,2)),
+    # ((2,1),(2,1),(2,1)),
+    
+    ((1,2),(1,1),(1,1)), # 4:4:0
+    # ((2,2),(2,1),(2,1)),
+    # ((1,4),(1,2),(1,2)),
+    # ((1,2),(1,2),(1,1)),   # Cb 4:4:4 Cr 4:4:0
+    # ((1,2),(1,1),(1,2)),   # Cb 4:4:0 Cr 4:4:4
+    
+    ((2,1),(1,1),(1,1)), # 4:2:2
+    # ((2,2),(1,2),(1,2)),
+    # ((2,1),(2,1),(1,1)),   # Cb 4:4:4 Cr 4:2:2
+    # ((2,1),(1,1),(2,1)),   # Cb 4:2:2 Cr 4:4:4
+    
+    ((2,2),(1,1),(1,1)), # 4:2:0
+    # ((2,2),(2,1),(1,1)),   # Cb 4:4:0 Cr 4:2:0
+    # ((2,2),(1,1),(2,1)),   # Cb 4:2:0 Cr 4:4:0
+    # ((2,2),(1,2),(1,1)),   # Cb 4:2:2 Cr 4:2:0
+    # ((2,2),(1,1),(1,2)),   # Cb 4:2:0 Cr 4:2:2
+    # ((2,2),(2,2),(1,1)),   # Cb 4:4:4 Cr 4:2:0
+    # ((2,2),(2,2),(2,1)),   # Cb 4:4:4 Cr 4:4:0
+    # ((2,2),(2,2),(1,2)),   # Cb 4:4:4 Cr 4:2:2
+    # ((2,2),(1,1),(2,2)),   # Cb 4:2:0 Cr 4:4:4
+    # ((2,2),(2,1),(2,2)),   # Cb 4:4:0 Cr 4:4:4
+    # ((2,2),(1,2),(2,2)),   # Cb 4:2:2 Cr 4:4:4
+    
+    # ((4,1),(1,1),(1,1)), # 4:1:1
+    # ((4,1),(2,1),(1,1)),   # Cb 4:2:2 Cr 4:1:1
+    # ((4,1),(1,1),(2,1)),   # Cb 4:1:1 Cr 4:2:2
+    
+    # ((4,2),(1,1),(1,1)), # 4:1:0
+    
+    # ((1,4),(1,1),(1,1)), # 1:0.5:0
+    # ((1,4),(1,2),(1,1)),
+    
+    # ((2,4),(1,1),(1,1)), # 2:0.5:0
+    
+    # ((3,1),(1,1),(1,1)), # 3:1:1
+    # ((3,1),(3,1),(1,1)),   # Cb 4:4:4 Cr 3:1:1
+    # ((3,1),(1,1),(3,1)),   # Cb 3:1:1 Cr 4:4:4
+    # ((3,2),(3,1),(1,1)), # 3:3:0
+    # ((3,2),(1,2),(1,2)), # 3:1:1
+]
+
 
 def run_compression_tests(dataset: np.ndarray):
     # intro
@@ -33,8 +80,9 @@ def run_compression_tests(dataset: np.ndarray):
         ctx = TestContext()
         ctx.dct_method = dct_method
         print("Method:", dct_method)
-        dct = compression.run_test(dataset, ctx)
-        compression.print_clusters(dct)
+        res = compression.run_test(dataset, ctx)
+        compression.print_clusters(res)
+        # TODO with/without chroma subsampling
     print()
     
     # quality
@@ -42,12 +90,32 @@ def run_compression_tests(dataset: np.ndarray):
     for quality in range(25,101):
         ctx = TestContext()
         ctx.quality = quality
-        q = compression.run_test(dataset, ctx)
-        compression.add_print_grouped_clusters(q.Cb, quality)
+        res = compression.run_test(dataset, ctx)
+        compression.add_print_grouped_clusters(res.Cb, quality)
     compression.end_print_grouped_clusters()
     print()
-
-
+    
+    # sampling factor
+    if dataset.shape[3] == 3:
+        print("--- Sampling factor ---")
+        print("Fancy subsampling")
+        for samp_factor in samp_factors:
+            ctx = TestContext()
+            ctx.samp_factor = samp_factor
+            ctx.use_chroma_sampling = True
+            res = compression.run_test(dataset, ctx)
+            compression.add_print_grouped_clusters(res.Cb, samp_factor)
+        compression.end_print_grouped_clusters()
+        print("Simple scaling")
+        for samp_factor in samp_factors:
+            ctx = TestContext()
+            ctx.samp_factor = samp_factor
+            ctx.use_chroma_sampling = False
+            res = compression.run_test(dataset, ctx)
+            compression.add_print_grouped_clusters(res.Cb, samp_factor)
+        compression.end_print_grouped_clusters()
+        print()
+            
 if __name__ == "__main__":
     # get datasets
     db_path = Path.home() / 'Datasets'
