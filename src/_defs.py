@@ -9,4 +9,5 @@ class TestContext:
     # chroma subsampling
     samp_factor:Tuple[ 3*Tuple[ 2*int ] ] = None
     use_chroma_sampling: bool = None
-    
+    # DCT method
+    dct_method: str = None

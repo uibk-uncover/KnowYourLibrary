@@ -36,7 +36,7 @@ def is_turbo_faster_than_6b(dataset: np.ndarray) -> Tuple[float,float]:
     _, pc = ttest_ind(t_c['6b'], t_c['turbo210'], alternative='greater', equal_var=False)
     _, pd = ttest_ind(t_d['6b'], t_d['turbo210'], alternative='greater', equal_var=False)
     return TestResults(pc, pd)
-    print('p-values: for compression %.2E, for decompression %.2E' % (pc,pd))
+    #print('p-values: for compression %.2E, for decompression %.2E' % (pc,pd))
 
 # # plot histograms
 # import pandas as pd
