@@ -7,7 +7,7 @@ class TestContext:
     # arbitrary version
     v_arbitrary: str = '9e'
     # chroma subsampling
-    samp_factor:Tuple[ 3*Tuple[ 2*int ] ] = None
+    samp_factor:Tuple[ Tuple[ int,int ], Tuple[ int,int ], Tuple[ int,int ] ] = None
     use_chroma_sampling: bool = None
     # DCT method
     dct_method: str = None
@@ -16,3 +16,4 @@ class TestContext:
     quality: int = None
     # colorspace
     colorspace: str = None
+    

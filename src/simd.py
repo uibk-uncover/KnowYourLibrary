@@ -7,7 +7,7 @@ from scipy.stats import ttest_ind, ttest_ind_from_stats
 import tempfile
 from typing import Tuple
 
-TestResults = collections.namedtuple('TestResults', ['compression','decompression'])
+PerformanceTestResults = collections.namedtuple('PerformanceTestResults', ['compression','decompression'])
 
 def is_turbo_faster_than_6b(dataset: np.ndarray) -> Tuple[float,float]:
     """"""
@@ -35,7 +35,7 @@ def is_turbo_faster_than_6b(dataset: np.ndarray) -> Tuple[float,float]:
     #   HA: mu_6b > mu_turbo
     _, pc = ttest_ind(t_c['6b'], t_c['turbo210'], alternative='greater', equal_var=False)
     _, pd = ttest_ind(t_d['6b'], t_d['turbo210'], alternative='greater', equal_var=False)
-    return TestResults(pc, pd)
+    return PerformanceTestResults(pc, pd)
     #print('p-values: for compression %.2E, for decompression %.2E' % (pc,pd))
 
 # # plot histograms
