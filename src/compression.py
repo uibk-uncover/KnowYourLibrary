@@ -1,4 +1,7 @@
 
+import jpeglib
+import numpy as np
+import pandas as pd
 import tempfile
 from ._defs import *
 
@@ -20,7 +23,7 @@ def _decompress_image(path: str, ctx: TestContext):
     # chroma subsampling
     flags = _flags[ctx.use_chroma_sampling]
     # decompress
-    return jpeglib.read_spatial(path, dct_method=dct_method, flags=flags)
+    return jpeglib.read_spatial(path, dct_method=ctx.dct_method_arbitrary, flags=flags)
 
 def _read_jpeg(path: str, ctx: TestContext):
     # read DCT
@@ -35,7 +38,7 @@ def run_test(dataset: np.ndarray, ctx: TestContext):
     tmp = tempfile.TemporaryDirectory()
     
     # iterate versions
-    images = {'version': [], 'Y': [], 'Cb': [], 'Cr': []}
+    images = {'version': [], 'spatial': [], 'Y': [], 'Cb': [], 'Cr': []}
     for i,v_compress in enumerate(ctx.versions):
         
         # compress with each version
@@ -48,9 +51,23 @@ def run_test(dataset: np.ndarray, ctx: TestContext):
         
         # decompress with single (arbitrary) version
         with jpeglib.version(ctx.v_arbitrary):
-            decompressed = [
+            dct = [
                 _read_jpeg(fname, ctx)
                 for j,fname in enumerate(fnames)
             ]
+            spatial = [
+                _decompress_image(fname, ctx)
+                for j,fname in enumerate(fnames)
+            ]
+            images['version'].append(v_compress)
+            images['spatial'].append( np.array([x.spatial for x in spatial]) )
+            images['Y'].append( np.array([x.Y for x in dct]) )
+            images['Cb'].append( np.array([x.Cb for x in dct]) )
+            images['Cr'].append( np.array([x.Cr for x in dct]) )
+    
+    # return dataframe
+    return pd.DataFrame(images)
+    
+            
             
 

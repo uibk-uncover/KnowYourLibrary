@@ -11,6 +11,7 @@ class TestContext:
     use_chroma_sampling: bool = None
     # DCT method
     dct_method: str = None
+    dct_method_arbitrary: str = None
     # quality
     quality: int = None
     # colorspace

@@ -19,7 +19,14 @@ def run_compression_tests(dataset: np.ndarray):
     print("is turbo faster in decompression than 6b: p-value", p.compression)
 
     # baseline
+<<<<<<< HEAD
 
+=======
+    baseline = run_test(dataset, TestContext())
+    
+    
+    
+>>>>>>> bf1f502 (compression exposed)
 
 if __name__ == "__main__":
     # get datasets
