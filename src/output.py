@@ -3,6 +3,7 @@ import collections
 import numpy as np
 import sys
 
+from . import mismatch
 from .compression import CompressionTestResults
 from .decompression import DecompressionTestResults
 
@@ -14,6 +15,7 @@ def print_intro(dataset: np.ndarray):
     print("| Channels:", dataset.shape[3], end="\n\n")
     sys.stdout.flush()
 
+
 def print_clusters(clusters):
     if type(clusters) == CompressionTestResults:
         pass
@@ -23,12 +25,15 @@ def print_clusters(clusters):
 
 
 _joint = collections.OrderedDict()
+
+
 def add_print_grouped_clusters(clusters, identifier):
     """Call me with clusters and identifier of a call. I will keep track of it and print it nicely for you."""
     global _joint
     # is empty
     was_empty = len(_joint) == 0
     # add to joint
+    clusters = mismatch.order_cluster_group(clusters)
     if clusters not in _joint:
         _joint[clusters] = [identifier]
     else:
@@ -43,7 +48,8 @@ def add_print_grouped_clusters(clusters, identifier):
         print(" ", _joint[k1][0], sep="", end="")
         _joint[k1] = _joint[k1][1:]
     sys.stdout.flush()
-    
+
+
 def end_print_grouped_clusters():
     """Call me when done with add_print_grouped_clusters."""
     global _joint

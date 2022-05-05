@@ -51,6 +51,12 @@ def decompress_image(path: str, ctx: TestContext):
     return jpeglib.read_spatial(path, dct_method=ctx.dct_method_decompression, flags=flags)
 
 
-def read_jpeg(path: str, ctx: TestContext):
+def read_jpeg(path: str):
     # read DCT
     return jpeglib.read_dct(path)
+
+
+def order_cluster_group(cluster_group: Tuple[Tuple[str]]) -> Tuple[Tuple[str]]:
+    string_cluster_group = tuple(str(cluster) for cluster in cluster_group)
+    order = np.argsort(string_cluster_group)
+    return tuple(cluster_group[o] for o in order)

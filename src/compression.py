@@ -13,9 +13,10 @@ from . import mismatch
 CompressionTestResults = collections.namedtuple(
     'CompressionTestResults', ['Y', 'Cb', 'Cr', 'spatial'])
 
+
 def run_test(dataset: np.ndarray, ctx: TestContext):
     """Executes compression test.
-    
+
     Args:
         dataset (np.ndarray): 4D tensor with dataset
         ctx (TestContext): context for the test
@@ -37,7 +38,7 @@ def run_test(dataset: np.ndarray, ctx: TestContext):
 
         # compress with each version
         if not ctx.compressor:
-            with jpeglib.version(v_compress):        
+            with jpeglib.version(v_compress):
                 [
                     compress_image(dataset[j], fnames[j], ctx)
                     for j, fname in enumerate(fnames)
@@ -48,7 +49,7 @@ def run_test(dataset: np.ndarray, ctx: TestContext):
         # decompress with single (arbitrary) version
         with jpeglib.version(ctx.v_arbitrary):
             dct = [
-                read_jpeg(fname, ctx)
+                read_jpeg(fname)
                 for j, fname in enumerate(fnames)
             ]
             spatial = [
@@ -61,7 +62,7 @@ def run_test(dataset: np.ndarray, ctx: TestContext):
             if channels == 3:
                 images['Cb'].append(np.array([x.Cb for x in dct]))
                 images['Cr'].append(np.array([x.Cr for x in dct]))
-    
+
     # results to dataframe
     images = pd.DataFrame(images)
 
@@ -81,6 +82,7 @@ def run_test(dataset: np.ndarray, ctx: TestContext):
     # return
     return CompressionTestResults(clusters_Y, clusters_Cb, clusters_Cr, clusters)
 
+
 def print_clusters(clusters):
     print("| Y", clusters.Y)
     # rgb
@@ -98,12 +100,16 @@ def print_clusters(clusters):
             print("| spatial", clusters.spatial)
     sys.stdout.flush()
 
-def _to_key(k):
-    ks = tuple(str(c) for c in k)
-    order = np.argsort(ks)
-    return tuple(k[o] for o in order)
+
+def _to_key(cluster_group: Tuple[Tuple[str]]) -> Tuple[Tuple[str]]:
+    string_cluster_group = tuple(str(cluster) for cluster in cluster_group)
+    order = np.argsort(string_cluster_group)
+    return tuple(cluster_group[o] for o in order)
+
 
 _joint = collections.OrderedDict()
+
+
 def add_print_grouped_clusters(clusters, identifier):
     """Call me with clusters and identifier of a call. I will keep track of it and print it nicely for you."""
     global _joint
@@ -120,7 +126,7 @@ def add_print_grouped_clusters(clusters, identifier):
                 channels['Cb'] = clusters.Cb
             if clusters.Y != clusters.Cr:
                 channels['Cr'] = clusters.Cr
-    for c in ['Y','C*','Cb','Cr','spatial']:
+    for c in ['Y', 'C*', 'Cb', 'Cr', 'spatial']:
         # do not print
         if c not in channels:
             continue
@@ -144,7 +150,8 @@ def add_print_grouped_clusters(clusters, identifier):
         print(" ", _joint[k1][0], sep="", end="")
         _joint[k1] = _joint[k1][1:]
     sys.stdout.flush()
-    
+
+
 def end_print_grouped_clusters():
     """Call me when done with add_print_grouped_clusters."""
     global _joint
