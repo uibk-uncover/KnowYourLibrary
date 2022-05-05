@@ -70,9 +70,9 @@ implementations = {
 
 def run_compression_tests(dataset: np.ndarray):
     """Runs compression tests
-
-    TODO:
-        - show not only Cb, but all three channels + spatial for check
+    
+    TODO
+        - PSNR
     """
     # intro
     print("=== Compression tests ===", end="\n\n")
@@ -84,11 +84,11 @@ def run_compression_tests(dataset: np.ndarray):
     p = is_turbo_faster_than_6b(dataset)
     print(" p-value", p.compression, end="\n\n")
 
-    # # baseline
-    # print("--- baseline ---")
-    # res = compression.run_test(dataset, TestContext())
-    # compression.print_clusters(res)
-    # print()
+    # baseline
+    print("--- baseline ---")
+    res = compression.run_test(dataset, TestContext())
+    compression.print_clusters(res)
+    print()
 
     def run_dct_compression_test(samp_factor, use_fancy_sampling=None):
         for dct_method in ['JDCT_ISLOW', 'JDCT_FLOAT', 'JDCT_IFAST']:
@@ -99,6 +99,7 @@ def run_compression_tests(dataset: np.ndarray):
             print("Method:", dct_method)
             res = compression.run_test(dataset, ctx)
             compression.print_clusters(res)
+            del ctx
 
     # DCT method
     print("--- DCT methods ---")
@@ -117,6 +118,7 @@ def run_compression_tests(dataset: np.ndarray):
         ctx.quality = quality
         res = compression.run_test(dataset, ctx)
         compression.add_print_grouped_clusters(res, quality)
+        del ctx
     compression.end_print_grouped_clusters()
     print()
 
@@ -133,6 +135,7 @@ def run_compression_tests(dataset: np.ndarray):
                 ctx.use_fancy_sampling = use_fancy_sampling
                 res = compression.run_test(dataset, ctx)
                 compression.add_print_grouped_clusters(res, samp_factor)
+                del ctx
             compression.end_print_grouped_clusters()
         print()
 
@@ -147,6 +150,7 @@ def run_compression_tests(dataset: np.ndarray):
                 compression.add_print_grouped_clusters(res, offset)
             else:
                 compression.add_print_grouped_clusters(res, offset)
+            del ctx
         compression.end_print_grouped_clusters()
 
     # margin effects
@@ -171,6 +175,7 @@ def run_compression_tests(dataset: np.ndarray):
         ctx.compressor = python.io_compressor_grayscale
     res = compression.run_test(dataset, ctx)
     compression.print_clusters(res)
+    del ctx
 
 
 def run_decompression_tests(dataset: np.ndarray):
@@ -192,6 +197,7 @@ def run_decompression_tests(dataset: np.ndarray):
         print("Method:", dct_method)
         dct = decompression.run_test(dataset, ctx)
         output.print_clusters(dct)
+        del ctx
     print()
 
 
