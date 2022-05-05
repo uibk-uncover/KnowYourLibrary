@@ -23,6 +23,7 @@ class TestContext:
     colorspace: str = None
     # compressor function
     compressor = None
+    decompressor = None
 
 
 cspaces = {1: 'JCS_GRAYSCALE', 3: 'JCS_RGB'}

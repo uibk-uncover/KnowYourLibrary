@@ -80,7 +80,6 @@ class libjpegturbo_IO(libjpeg_IO):
 
 def io_compressor_rgb(dataset, fnames, version, ctx):
     # parse
-    N, _, _, channels = dataset.shape
     impl = ctx.versions[version]
     # compress
     [
@@ -90,10 +89,23 @@ def io_compressor_rgb(dataset, fnames, version, ctx):
 
 def io_compressor_grayscale(dataset, fnames, version, ctx):
     # parse
-    N, _, _, channels = dataset.shape
     impl = ctx.versions[version]
     # compress
     [
         impl(fnames[i]).compress_grayscale(dataset[i])
         for i,fname in enumerate(fnames)
     ]
+
+
+def io_decompressor(fnames, version, ctx) -> np.ndarray:
+
+    impl = ctx.versions[version]
+
+    return np.stack([
+        impl(fname).decompress()
+        for fname in fnames
+    ], axis=0)
+
+
+
+
