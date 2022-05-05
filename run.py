@@ -3,6 +3,7 @@ from src import TestContext
 from src import compression
 from src import output
 from src import implementation
+from src import psnr
 from src.simd import *
 from src.dataset import *
 from src._defs import samp_factors, implementations
@@ -31,10 +32,11 @@ def run_compression_tests(dataset: np.ndarray):
 
     # baseline
     print("--- baseline ---")
-    res = compression.run_test(dataset, TestContext())
+    ctx = TestContext()
+    res = compression.run_test(dataset, ctx)
     compression.print_clusters(res)
-    print()
-
+    print(end="\n\n")
+    
     def run_dct_compression_test(samp_factor, use_fancy_sampling=None):
         for dct_method in ['JDCT_ISLOW', 'JDCT_FLOAT', 'JDCT_IFAST']:
             ctx = TestContext()
@@ -44,8 +46,7 @@ def run_compression_tests(dataset: np.ndarray):
             print("Method:", dct_method)
             res = compression.run_test(dataset, ctx)
             compression.print_clusters(res)
-            del ctx
-
+            
     # DCT method
     print("--- DCT methods ---")
     print("4:4:4 no downsampling")
@@ -64,9 +65,8 @@ def run_compression_tests(dataset: np.ndarray):
         ctx.quality = quality
         res = compression.run_test(dataset, ctx)
         compression.add_print_grouped_clusters(res, quality)
-        del ctx
     compression.end_print_grouped_clusters()
-    print()
+    print(end="\n\n")
 
     # sampling factor
     if dataset.shape[3] == 3:
@@ -81,9 +81,8 @@ def run_compression_tests(dataset: np.ndarray):
                 ctx.use_fancy_sampling = use_fancy_sampling
                 res = compression.run_test(dataset, ctx)
                 compression.add_print_grouped_clusters(res, samp_factor)
-                del ctx
             compression.end_print_grouped_clusters()
-        print()
+        print(end="\n\n")
 
     def run_margin_compression_test(offsets, samp_factor=None, use_fancy_sampling=None):
         for d in generate_cropped_datasets(dataset, offsets):
@@ -106,7 +105,7 @@ def run_compression_tests(dataset: np.ndarray):
             print(f"4:2:0 {method}")
             run_margin_compression_test([16, 15, 9, 8, 7, 3, 2, 1],
                                         ((2, 2), (1, 1), (1, 1)), use_fancy_sampling)
-        print()
+        print(end="\n\n")
 
     # Python implementations
     print("--- Python implementations ---")
@@ -118,7 +117,7 @@ def run_compression_tests(dataset: np.ndarray):
         ctx.compressor = implementation.io_compressor_grayscale
     res = compression.run_test(dataset, ctx)
     compression.print_clusters(res)
-    del ctx
+    print(end="\n\n")
 
 
 if __name__ == "__main__":

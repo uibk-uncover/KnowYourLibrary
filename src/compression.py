@@ -166,6 +166,5 @@ def end_print_grouped_clusters():
         while _joint[k]:
             print(" ", _joint[k][0], sep="", end="")
             _joint[k] = _joint[k][1:]
-        print()
     _joint = collections.OrderedDict()
     sys.stdout.flush()

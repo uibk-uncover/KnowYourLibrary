@@ -1,9 +1,10 @@
 
-import numpy as np
 import jpeglib
+import numpy as np
+import tempfile
 from typing import Tuple
 from src import implementation
-
+import sys
 
 # sampling factor
 samp_factors = [
@@ -113,3 +114,8 @@ def decompress_image(path: str, ctx: TestContext):
 def read_jpeg(path: str):
     # read DCT
     return jpeglib.read_dct(path)
+
+def compress_image_read_jpeg(x: np.ndarray, ctx: TestContext):
+    with tempfile.NamedTemporaryFile() as tmp:
+        compress_image(x, tmp.name, ctx)
+        return read_jpeg(tmp.name, ctx)
