@@ -79,10 +79,10 @@ def run_compression_tests(dataset: np.ndarray):
     print("--- Data ---")
     output.print_intro(dataset)
 
-    # # performance test: turbo << 6b
-    # print("is turbo faster in decompression than 6b:", end="")
-    # p = is_turbo_faster_than_6b(dataset)
-    # print(" p-value", p.compression, end="\n\n")
+    # performance test: turbo << 6b
+    print("is turbo faster in decompression than 6b:", end="")
+    p = is_turbo_faster_than_6b(dataset)
+    print(" p-value", p.compression, end="\n\n")
 
     # # baseline
     # print("--- baseline ---")
@@ -113,12 +113,12 @@ def run_compression_tests(dataset: np.ndarray):
 
     # quality
     print("--- Quality ---")
-    for quality in range(25, 101):
+    for quality in range(0,101):
         ctx = TestContext()
         ctx.quality = quality
         res = compression.run_test(dataset, ctx)
-        output.add_print_grouped_clusters(res, quality)
-    output.end_print_grouped_clusters()
+        compression.add_print_grouped_clusters(res, quality)
+    compression.end_print_grouped_clusters()
     print()
 
     # sampling factor

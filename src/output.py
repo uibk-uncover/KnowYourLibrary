@@ -12,12 +12,14 @@ def print_intro(dataset: np.ndarray):
     print("| Data size:", dataset.shape[0])
     print("| Image size:", dataset.shape[1:3])
     print("| Channels:", dataset.shape[3], end="\n\n")
+    sys.stdout.flush()
 
 def print_clusters(clusters):
     if type(clusters) == CompressionTestResults:
         pass
     if type(clusters) == DecompressionTestResults:
         print('| spatial', clusters.spatial)
+    sys.stdout.flush()
 
 
 _joint = collections.OrderedDict()
@@ -58,3 +60,4 @@ def end_print_grouped_clusters():
             _joint[k] = _joint[k][1:]
         print()
     _joint = collections.OrderedDict()
+    sys.stdout.flush()

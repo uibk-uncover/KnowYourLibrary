@@ -96,6 +96,7 @@ def print_clusters(clusters):
     else:
         if not mismatch.is_clustering_same(clusters.Y, clusters.spatial):
             print("| spatial", clusters.spatial)
+    sys.stdout.flush()
 
 def _to_key(k):
     ks = tuple(str(c) for c in k)
@@ -160,3 +161,4 @@ def end_print_grouped_clusters():
             _joint[k] = _joint[k][1:]
         print()
     _joint = collections.OrderedDict()
+    sys.stdout.flush()
