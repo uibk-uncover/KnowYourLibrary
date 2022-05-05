@@ -16,19 +16,20 @@ def run_test(dataset: np.ndarray, ctx: TestContext()) -> pd.DataFrame:
     sample_size, _, _, channels = dataset.shape
     ctx.colorspace = cspaces[channels]
 
-    images_rgb = {'comp_version': [], 'decomp_version': [], 'image': []}
+    images_rgb = {'comp_version': [], 'version': [], 'spatial': []}
 
-    tmp = tempfile.NamedTemporaryFile()  # create temporary file
+    tmp = tempfile.TemporaryDirectory()  # create temporary directory
     for i, v_decomp in enumerate(ctx.versions):
 
-        fnames = [str(Path(tmp) / f'{i}.jpeg')
-                  for i in range(dataset.shape[0])]
+        fnames = [str(Path(tmp.name) / f'{i}.jpeg')
+                  for i in range(sample_size)]
 
         # compress each image the fixed default version
         with jpeglib.version(ctx.v_arbitrary):
-            for i, fname in enumerate(fnames):
-                im = libjpeg.from_spatial(dataset[i])
-                im.write_spatial(fname)
+            [
+                compress_image(dataset[j], fnames[j], ctx)
+                for j, fname in enumerate(fnames)
+            ]
 
         # decompress each image with each version
         with jpeglib.version(v_decomp):
@@ -43,7 +44,7 @@ def run_test(dataset: np.ndarray, ctx: TestContext()) -> pd.DataFrame:
             images_rgb['spatial'].append(
                 np.array([x.spatial for x in spatial]))
 
-    images = pd.DataFrame(images)
+    images = pd.DataFrame(images_rgb)
 
     # get clusters of equal results
     def _prepare(df, var): return df[['version', var]].rename(

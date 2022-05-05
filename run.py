@@ -3,7 +3,7 @@ from src import TestContext
 from src import compression
 from src import decompression
 from src import output
-from src.decompression import run_baseline_decompression
+from src.decompression import run_test
 from src.simd import *
 from src.dataset import *
 from pathlib import Path
@@ -45,7 +45,7 @@ def run_decompression_tests(dataset: np.ndarray):
 
    # baseline
     print("--- baseline ---")
-    baseline = decompression.run_baseline(dataset, TestContext())
+    baseline = decompression.run_test(dataset, TestContext())
     output.print_clusters(baseline)
     print()
 
