@@ -107,8 +107,7 @@ def run_compression_tests(dataset: np.ndarray):
     if dataset.shape[3] == 3:
         for use_fancy_sampling, method in zip([True, False], ['fancy downsampling', 'simple_scaling']):
             print(f"4:2:0 {method}")
-            run_dct_compression_test(
-                ((2, 2), (1, 1), (1, 1)), use_fancy_sampling)
+            run_dct_compression_test(((2, 2), (1, 1), (1, 1)), use_fancy_sampling)
     print()
 
     # quality
@@ -133,8 +132,7 @@ def run_compression_tests(dataset: np.ndarray):
                 ctx.samp_factor = samp_factor
                 ctx.use_fancy_sampling = use_fancy_sampling
                 res = compression.run_test(dataset, ctx)
-                compression.add_print_grouped_clusters(
-                    res, samp_factor)  # TODO
+                compression.add_print_grouped_clusters(res, samp_factor)
             compression.end_print_grouped_clusters()
         print()
 
@@ -148,7 +146,7 @@ def run_compression_tests(dataset: np.ndarray):
             if dataset.shape[3] == 1:
                 compression.add_print_grouped_clusters(res, offset)
             else:
-                compression.add_print_grouped_clusters(res, offset)  # TODO
+                compression.add_print_grouped_clusters(res, offset)
         compression.end_print_grouped_clusters()
 
     # margin effects
@@ -173,6 +171,28 @@ def run_compression_tests(dataset: np.ndarray):
         ctx.compressor = python.io_compressor_grayscale
     res = compression.run_test(dataset, ctx)
     compression.print_clusters(res)
+
+
+def run_decompression_tests(dataset: np.ndarray):
+    # intro
+    print("=== Decompression tests ===")
+    output.print_intro(dataset)
+
+   # baseline
+    print("--- baseline ---")
+    baseline = decompression.run_test(dataset, TestContext())
+    output.print_clusters(baseline)
+    print()
+
+    # DCT methods
+    print("--- DCT methods ---")
+    for dct_method in ['JDCT_ISLOW', 'JDCT_FLOAT', 'JDCT_IFAST']:
+        ctx = TestContext()
+        ctx.dct_method = dct_method
+        print("Method:", dct_method)
+        dct = decompression.run_test(dataset, ctx)
+        output.print_clusters(dct)
+    print()
 
 
 if __name__ == "__main__":
