@@ -98,6 +98,7 @@ def print_clusters(clusters):
             print("| spatial", clusters.spatial)
 
 def _to_key(k):
+    pass
     
 
 _joint = collections.OrderedDict()
