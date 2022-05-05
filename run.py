@@ -1,71 +1,15 @@
 
+import imp
 from src import TestContext
-from src import compression, decompression
+from src import compression
 from src import output
 from src import implementation
 from src.simd import *
 from src.dataset import *
+from src._defs import samp_factors, implementations
 from pathlib import Path
 import sys
 sys.path.append('.')
-
-# sampling factor
-samp_factors = [
-    ((1, 1), (1, 1), (1, 1)),  # 4:4:4
-    ((1, 2), (1, 2), (1, 2)),
-    ((2, 1), (2, 1), (2, 1)),
-
-    ((1, 2), (1, 1), (1, 1)),  # 4:4:0
-    ((2, 2), (2, 1), (2, 1)),
-    ((1, 4), (1, 2), (1, 2)),
-    ((1, 2), (1, 2), (1, 1)),   # Cb 4:4:4 Cr 4:4:0
-    ((1, 2), (1, 1), (1, 2)),   # Cb 4:4:0 Cr 4:4:4
-
-    ((2, 1), (1, 1), (1, 1)),  # 4:2:2
-    ((2, 2), (1, 2), (1, 2)),
-    ((2, 1), (2, 1), (1, 1)),   # Cb 4:4:4 Cr 4:2:2
-    ((2, 1), (1, 1), (2, 1)),   # Cb 4:2:2 Cr 4:4:4
-
-    ((2, 2), (1, 1), (1, 1)),  # 4:2:0
-    ((2, 2), (2, 1), (1, 1)),   # Cb 4:4:0 Cr 4:2:0
-    ((2, 2), (1, 1), (2, 1)),   # Cb 4:2:0 Cr 4:4:0
-    ((2, 2), (1, 2), (1, 1)),   # Cb 4:2:2 Cr 4:2:0
-    ((2, 2), (1, 1), (1, 2)),   # Cb 4:2:0 Cr 4:2:2
-    ((2, 2), (2, 2), (1, 1)),   # Cb 4:4:4 Cr 4:2:0
-    ((2, 2), (2, 2), (2, 1)),   # Cb 4:4:4 Cr 4:4:0
-    ((2, 2), (2, 2), (1, 2)),   # Cb 4:4:4 Cr 4:2:2
-    ((2, 2), (1, 1), (2, 2)),   # Cb 4:2:0 Cr 4:4:4
-    ((2, 2), (2, 1), (2, 2)),   # Cb 4:4:0 Cr 4:4:4
-    ((2, 2), (1, 2), (2, 2)),   # Cb 4:2:2 Cr 4:4:4
-
-    ((4, 1), (1, 1), (1, 1)),  # 4:1:1
-    ((4, 1), (2, 1), (1, 1)),   # Cb 4:2:2 Cr 4:1:1
-    ((4, 1), (1, 1), (2, 1)),   # Cb 4:1:1 Cr 4:2:2
-
-    ((4, 2), (1, 1), (1, 1)),  # 4:1:0
-
-    ((1, 4), (1, 1), (1, 1)),  # 1:0.5:0
-    ((1, 4), (1, 2), (1, 1)),
-
-    ((2, 4), (1, 1), (1, 1)),  # 2:0.5:0
-
-    ((3, 1), (1, 1), (1, 1)),  # 3:1:1
-    ((3, 1), (3, 1), (1, 1)),   # Cb 4:4:4 Cr 3:1:1
-    ((3, 1), (1, 1), (3, 1)),   # Cb 3:1:1 Cr 4:4:4
-    ((3, 2), (3, 1), (1, 1)),  # 3:3:0
-    ((3, 2), (1, 2), (1, 2)),  # 3:1:1
-]
-
-implementations = {
-    'PIL': implementation.PIL_IO,
-    'cv2': implementation.cv2_IO,
-    'plt': implementation.plt_IO,
-    '6b': implementation.libjpeg6b_IO,
-    '8d': implementation.libjpeg8d_IO,
-    '9d': implementation.libjpeg9d_IO,
-    '9e': implementation.libjpeg9e_IO,
-    'turbo': implementation.libjpegturbo_IO
-}
 
 
 def run_compression_tests(dataset: np.ndarray):
@@ -130,7 +74,7 @@ def run_compression_tests(dataset: np.ndarray):
         for use_fancy_sampling, method in zip([True, False], ['Fancy downsampling', 'Simple_scaling']):
             print(method)
             # sampling factores
-            for samp_factor in samp_factors:
+            for samp_factor in __defs.samp_factors:
                 ctx = TestContext()
                 ctx.samp_factor = samp_factor
                 ctx.use_fancy_sampling = use_fancy_sampling
@@ -173,103 +117,6 @@ def run_compression_tests(dataset: np.ndarray):
         ctx.compressor = implementation.io_compressor_grayscale
     res = compression.run_test(dataset, ctx)
     compression.print_clusters(res)
-    del ctx
-
-
-def run_decompression_tests(dataset: np.ndarray):
-    # intro
-    print("=== Decompression tests ===")
-    output.print_intro(dataset)
-
-   # baseline
-    print("--- baseline ---")
-    baseline = decompression.run_test(dataset, TestContext())
-    output.print_clusters(baseline)
-    print()
-
-    def run_dct_decompression_test(samp_factor, use_fancy_sampling=None):
-        for dct_method in ['JDCT_ISLOW', 'JDCT_FLOAT', 'JDCT_IFAST']:
-            ctx = TestContext()
-            ctx.dct_method_decompression = dct_method
-            ctx.samp_factor = samp_factor
-            ctx.use_fancy_sampling = use_fancy_sampling
-            print("Method:", ctx.dct_method_decompression)
-            dct_result = decompression.run_test(dataset, ctx)
-            output.print_clusters(dct_result)
-            del ctx
-
-    # DCT method
-    print("--- DCT methods ---")
-    print("4:4:4 no downsampling")
-    run_dct_decompression_test(((1, 1), (1, 1), (1, 1)))
-    if dataset.shape[3] == 3:
-        for use_fancy_sampling, method in zip([True, False], ['fancy upsampling', 'simple scaling']):
-            print(f"4:2:0 {method}")
-            run_dct_decompression_test(
-                ((2, 2), (1, 1), (1, 1)), use_fancy_sampling)
-    print()
-
-    # quality
-    print("--- Quality ---")
-    for quality in range(25, 101):
-        ctx = TestContext()
-        ctx.quality = quality
-        quality_result = decompression.run_test(dataset, ctx)
-        output.add_print_grouped_clusters(quality_result.spatial, quality)
-        del ctx
-    output.end_print_grouped_clusters()
-    print()
-
-    # sampling factor
-    if dataset.shape[3] == 3:
-        print("--- Sampling factor ---")
-        # fancy vs. simple
-        for use_fancy_sampling, method in zip([True, False], ['Fancy upsampling', 'Simple scaling']):
-            print(method)
-            # sampling factores
-            for samp_factor in samp_factors:
-                ctx = TestContext()
-                ctx.samp_factor = samp_factor
-                ctx.use_fancy_sampling = use_fancy_sampling
-                sampling_factor_result = decompression.run_test(dataset, ctx)
-                output.add_print_grouped_clusters(
-                    sampling_factor_result.spatial, samp_factor)
-                del ctx
-            output.end_print_grouped_clusters()
-        print(end='\n\n')
-
-    def run_margin_decompression_test(offsets, samp_factor=None, use_fancy_sampling=None):
-        for d in generate_cropped_datasets(dataset, offsets):
-            offset = (d.shape[1] % 8, d.shape[2] % 8)
-            ctx = TestContext()
-            ctx.samp_factor = samp_factor
-            ctx.use_fancy_sampling = use_fancy_sampling
-            margin_result = decompression.run_test(dataset, ctx)
-            output.add_print_grouped_clusters(margin_result.spatial, offset)
-
-            del ctx
-        output.end_print_grouped_clusters()
-
-    # margin effects
-    print("--- Margin effects ---")
-    print("4:4:4 no downsampling")
-    run_margin_decompression_test([0, 1, 2, 4, 7, 8],
-                                  ((1, 1), (1, 1), (1, 1)))
-    if dataset.shape[3] == 3:
-        for use_fancy_sampling, method in zip([True, False], ['fancy upsampling', 'simple scaling']):
-            print(f"4:2:0 {method}")
-            run_margin_decompression_test([16, 15, 9, 8, 7, 3, 2, 1],
-                                          ((2, 2), (1, 1), (1, 1)), use_fancy_sampling)
-        print(end='\n\n')
-
-    # Python implementations
-    print("--- Python implementations ---")
-    ctx = TestContext()
-    ctx.versions = implementations
-    ctx.decompressor = implementation.io_decompressor
-
-    res = decompression.run_test(dataset, ctx)
-    output.print_clusters(res)
     del ctx
 
 

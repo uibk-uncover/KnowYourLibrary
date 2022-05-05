@@ -16,10 +16,10 @@ def run_test(dataset: np.ndarray, ctx: TestContext()) -> pd.DataFrame:
     sample_size, _, _, channels = dataset.shape
     ctx.colorspace = cspaces[channels]
 
-    images_rgb = { 'version': [], 'spatial': []}
+    images_rgb = {'version': [], 'spatial': []}
 
     tmp = tempfile.TemporaryDirectory()  # create temporary directory
-    for i, v_decomp in enumerate(ctx.versions):
+    for v_decomp in ctx.versions:
 
         fnames = [str(Path(tmp.name) / f'{i}.jpeg')
                   for i in range(sample_size)]
@@ -28,7 +28,7 @@ def run_test(dataset: np.ndarray, ctx: TestContext()) -> pd.DataFrame:
         with jpeglib.version(ctx.v_arbitrary):
             [
                 compress_image(dataset[j], fnames[j], ctx)
-                for j, fname in enumerate(fnames)
+                for j, _ in enumerate(fnames)
             ]
 
         # decompress each image with each version
@@ -40,12 +40,12 @@ def run_test(dataset: np.ndarray, ctx: TestContext()) -> pd.DataFrame:
                     for fname in fnames
                 ]
                 images_rgb['spatial'].append(
-                                np.array([x.spatial for x in spatial]))
+                    np.array([x.spatial for x in spatial]))
         else:
-            images_rgb['spatial'].append(ctx.decompressor(fnames, v_decomp, ctx))
+            images_rgb['spatial'].append(
+                ctx.decompressor(fnames, v_decomp, ctx))
 
         images_rgb['version'].append(v_decomp)
-            
 
     images = pd.DataFrame(images_rgb)
 
@@ -56,5 +56,3 @@ def run_test(dataset: np.ndarray, ctx: TestContext()) -> pd.DataFrame:
     clusters = mismatch.get_clusters(_prepare(images, 'spatial'))
 
     return DecompressionTestResults(clusters)
-
-
