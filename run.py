@@ -31,8 +31,8 @@ def run_compression_tests(dataset: np.ndarray):
     print("--- DCT methods ---")
     for dct_method in ['JDCT_ISLOW', 'JDCT_FLOAT', 'JDCT_IFAST']:
         ctx = TestContext()
-        ctx.dct_method = dct_method
-        print("Method:", dct_method)
+        ctx.dct_method_compression = dct_method
+        print("Method:", ctx.dct_method_compression)
         dct = compression.run_test(dataset, ctx)
         output.print_clusters(dct)
     print()
@@ -53,8 +53,8 @@ def run_decompression_tests(dataset: np.ndarray):
     print("--- DCT methods ---")
     for dct_method in ['JDCT_ISLOW', 'JDCT_FLOAT', 'JDCT_IFAST']:
         ctx = TestContext()
-        ctx.dct_method = dct_method
-        print("Method:", dct_method)
+        ctx.dct_method_decompression = dct_method
+        print("Method:", ctx.dct_method_decompression)
         dct = decompression.run_test(dataset, ctx)
         output.print_clusters(dct)
     print()
@@ -70,10 +70,6 @@ if __name__ == "__main__":
         db_path / 'ALASKA_v2_TIFF_256_COLOR', sample_size, (256, 256))
     # boss = load_boss_with_extrems(
     #    db_path / 'BOSS_raw' / 'BOSS_from_raw', sample_size, image_dimensions)
-
-    # get datasets
-    #alaska = get_color_dataset(10)
-    #boss = get_grayscale_dataset(10)
 
     run_compression_tests(alaska)
     run_decompression_tests(alaska)
