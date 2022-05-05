@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 import tempfile
+import sys
 from ._defs import *
 from . import mismatch
 
@@ -96,17 +97,40 @@ def print_clusters(clusters):
         if not mismatch.is_clustering_same(clusters.Y, clusters.spatial):
             print("| spatial", clusters.spatial)
 
+def _to_key(k):
+    
+
 _joint = collections.OrderedDict()
 def add_print_grouped_clusters(clusters, identifier):
     """Call me with clusters and identifier of a call. I will keep track of it and print it nicely for you."""
     global _joint
     # is empty
     was_empty = len(_joint) == 0
-    # add to joint
-    if clusters not in _joint:
-        _joint[clusters] = [identifier]
-    else:
-        _joint[clusters].append(identifier)
+    # choose channels to add
+    channels = {'Y': clusters.Y, 'spatial': clusters.spatial}
+    if clusters.Cb is not None and clusters.Cr is not None:
+        if clusters.Cb == clusters.Cr:
+            if clusters.Y != clusters.Cb:
+                channels['C*'] = clusters.Cb
+        else:
+            if clusters.Y != clusters.Cb:
+                channels['Cb'] = clusters.Cb
+            if clusters.Y != clusters.Cr:
+                channels['Cr'] = clusters.Cr
+    for c in ['Y','C*','Cb','Cr','spatial']:
+        # do not print
+        if c not in channels:
+            continue
+        # get channel clustering
+        clust = channels[c]
+        clust = _to_key(clust)
+        # create channel identifier
+        identifier_c = f'{identifier}:{c}'
+        # add to joint
+        if clust not in _joint:
+            _joint[clust] = [identifier_c]
+        else:
+            _joint[clust].append(identifier_c)
     # get the first
     k1 = next(iter(_joint))
     # print legend

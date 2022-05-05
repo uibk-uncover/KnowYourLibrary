@@ -1,16 +1,17 @@
-from src.compression import CompressionTestResults
-from src.decompression import DecompressionTestResults
-from . import mismatch
+
 import collections
-import sys
 import numpy as np
+import sys
+
+from .compression import CompressionTestResults
+from .decompression import DecompressionTestResults
 
 
 def print_intro(dataset: np.ndarray):
     print("Data:")
-    print("| Data size: ", dataset.shape[0])
-    print("| Image size: ", dataset.shape[1:3])
-    print("| Channels: ", dataset.shape[3], end="\n\n")
+    print("| Data size:", dataset.shape[0])
+    print("| Image size:", dataset.shape[1:3])
+    print("| Channels:", dataset.shape[3], end="\n\n")
 
 def print_clusters(clusters):
     if type(clusters) == CompressionTestResults:

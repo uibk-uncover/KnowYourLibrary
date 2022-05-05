@@ -68,6 +68,11 @@ implementations = {
 }
 
 def run_compression_tests(dataset: np.ndarray):
+    """Runs compression tests
+    
+    TODO:
+        - show not only Cb, but all three channels + spatial for check
+    """
     # intro
     print("=== Compression tests ===", end="\n\n")
     print("--- Data ---")
@@ -110,25 +115,25 @@ def run_compression_tests(dataset: np.ndarray):
     #     ctx = TestContext()
     #     ctx.quality = quality
     #     res = compression.run_test(dataset, ctx)
-    #     output.add_print_grouped_clusters(res.Cb, quality)
+    #     output.add_print_grouped_clusters(res, quality)
     # output.end_print_grouped_clusters()
     # print()
     
-    # # sampling factor
-    # if dataset.shape[3] == 3:
-    #     print("--- Sampling factor ---")
-    #     # fancy vs. simple
-    #     for use_fancy_sampling,method in zip([True,False],['Fancy downsampling','Simple_scaling']):
-    #         print(method)
-    #         # sampling factores
-    #         for samp_factor in samp_factors:
-    #             ctx = TestContext()
-    #             ctx.samp_factor = samp_factor
-    #             ctx.use_chroma_sampling = use_fancy_sampling
-    #             res = compression.run_test(dataset, ctx)
-    #             output.add_print_grouped_clusters(res.Cb, samp_factor)
-    #         output.end_print_grouped_clusters()
-    #     print()
+    # sampling factor
+    if dataset.shape[3] == 3:
+        print("--- Sampling factor ---")
+        # fancy vs. simple
+        for use_fancy_sampling,method in zip([True,False],['Fancy downsampling','Simple_scaling']):
+            print(method)
+            # sampling factores
+            for samp_factor in samp_factors:
+                ctx = TestContext()
+                ctx.samp_factor = samp_factor
+                ctx.use_chroma_sampling = use_fancy_sampling
+                res = compression.run_test(dataset, ctx)
+                compression.add_print_grouped_clusters(res, samp_factor) # TODO
+            compression.end_print_grouped_clusters()
+        print()
 
     def run_margin_compression_test(offsets, samp_factor=None, use_fancy_sampling=None):
         for d in generate_cropped_datasets(dataset, offsets):
@@ -137,8 +142,11 @@ def run_compression_tests(dataset: np.ndarray):
             ctx.samp_factor = samp_factor
             ctx.use_fancy_sampling = use_fancy_sampling
             res = compression.run_test(dataset, ctx)
-            output.add_print_grouped_clusters(res.Cb, offset)
-        output.end_print_grouped_clusters()
+            if dataset.shape[3] == 1:
+                compression.add_print_grouped_clusters(res, offset)
+            else:
+                compression.add_print_grouped_clusters(res, offset) # TODO
+        compression.end_print_grouped_clusters()
 
     # margin effects
     print("--- Margin effects ---")
@@ -152,16 +160,16 @@ def run_compression_tests(dataset: np.ndarray):
                                         ((2,2),(1,1),(1,1)), use_fancy_sampling)
         print()
 
-    # # Python implementations
-    # print("--- Python implementations ---")
-    # ctx = TestContext()
-    # ctx.versions = implementations
-    # if dataset.shape[3] == 3:
-    #     ctx.compressor = python.io_compressor_rgb
-    # else:
-    #     ctx.compressor = python.io_compressor_grayscale
-    # res = compression.run_test(dataset, ctx)
-    # compression.print_clusters(res)
+    # Python implementations
+    print("--- Python implementations ---")
+    ctx = TestContext()
+    ctx.versions = implementations
+    if dataset.shape[3] == 3:
+        ctx.compressor = python.io_compressor_rgb
+    else:
+        ctx.compressor = python.io_compressor_grayscale
+    res = compression.run_test(dataset, ctx)
+    compression.print_clusters(res)
 
 if __name__ == "__main__":
 
@@ -176,7 +184,7 @@ if __name__ == "__main__":
 
     # compression tests
     run_compression_tests(alaska)
-    run_compression_tests(boss)
+    #run_compression_tests(boss)
     # decompression tests
-    run_decompression_tests(alaska)
+    #run_decompression_tests(alaska)
     #run_decompression_tests(boss)

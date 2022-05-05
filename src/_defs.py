@@ -32,7 +32,7 @@ _flags = {True: ['+DO_FANCY_UPSAMPLING'],
 
 def compress_image(x: np.ndarray, path: str, ctx: TestContext):
     # to jpeglib
-    im = jpeglib.from_spatial(x, ctx.colorspace)
+    im = jpeglib.from_spatial(x)
     # samp factor
     if ctx.samp_factor is not None:
         im.samp_factor = ctx.samp_factor
