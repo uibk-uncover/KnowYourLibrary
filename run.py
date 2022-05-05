@@ -12,48 +12,48 @@ sys.path.append('.')
 # sampling factor
 samp_factors = [
     ((1,1),(1,1),(1,1)), # 4:4:4
-    # ((1,2),(1,2),(1,2)),
-    # ((2,1),(2,1),(2,1)),
+    ((1,2),(1,2),(1,2)),
+    ((2,1),(2,1),(2,1)),
     
     ((1,2),(1,1),(1,1)), # 4:4:0
-    # ((2,2),(2,1),(2,1)),
-    # ((1,4),(1,2),(1,2)),
-    # ((1,2),(1,2),(1,1)),   # Cb 4:4:4 Cr 4:4:0
-    # ((1,2),(1,1),(1,2)),   # Cb 4:4:0 Cr 4:4:4
+    ((2,2),(2,1),(2,1)),
+    ((1,4),(1,2),(1,2)),
+    ((1,2),(1,2),(1,1)),   # Cb 4:4:4 Cr 4:4:0
+    ((1,2),(1,1),(1,2)),   # Cb 4:4:0 Cr 4:4:4
     
     ((2,1),(1,1),(1,1)), # 4:2:2
-    # ((2,2),(1,2),(1,2)),
-    # ((2,1),(2,1),(1,1)),   # Cb 4:4:4 Cr 4:2:2
-    # ((2,1),(1,1),(2,1)),   # Cb 4:2:2 Cr 4:4:4
+    ((2,2),(1,2),(1,2)),
+    ((2,1),(2,1),(1,1)),   # Cb 4:4:4 Cr 4:2:2
+    ((2,1),(1,1),(2,1)),   # Cb 4:2:2 Cr 4:4:4
     
     ((2,2),(1,1),(1,1)), # 4:2:0
-    # ((2,2),(2,1),(1,1)),   # Cb 4:4:0 Cr 4:2:0
-    # ((2,2),(1,1),(2,1)),   # Cb 4:2:0 Cr 4:4:0
-    # ((2,2),(1,2),(1,1)),   # Cb 4:2:2 Cr 4:2:0
-    # ((2,2),(1,1),(1,2)),   # Cb 4:2:0 Cr 4:2:2
-    # ((2,2),(2,2),(1,1)),   # Cb 4:4:4 Cr 4:2:0
-    # ((2,2),(2,2),(2,1)),   # Cb 4:4:4 Cr 4:4:0
-    # ((2,2),(2,2),(1,2)),   # Cb 4:4:4 Cr 4:2:2
-    # ((2,2),(1,1),(2,2)),   # Cb 4:2:0 Cr 4:4:4
-    # ((2,2),(2,1),(2,2)),   # Cb 4:4:0 Cr 4:4:4
-    # ((2,2),(1,2),(2,2)),   # Cb 4:2:2 Cr 4:4:4
+    ((2,2),(2,1),(1,1)),   # Cb 4:4:0 Cr 4:2:0
+    ((2,2),(1,1),(2,1)),   # Cb 4:2:0 Cr 4:4:0
+    ((2,2),(1,2),(1,1)),   # Cb 4:2:2 Cr 4:2:0
+    ((2,2),(1,1),(1,2)),   # Cb 4:2:0 Cr 4:2:2
+    ((2,2),(2,2),(1,1)),   # Cb 4:4:4 Cr 4:2:0
+    ((2,2),(2,2),(2,1)),   # Cb 4:4:4 Cr 4:4:0
+    ((2,2),(2,2),(1,2)),   # Cb 4:4:4 Cr 4:2:2
+    ((2,2),(1,1),(2,2)),   # Cb 4:2:0 Cr 4:4:4
+    ((2,2),(2,1),(2,2)),   # Cb 4:4:0 Cr 4:4:4
+    ((2,2),(1,2),(2,2)),   # Cb 4:2:2 Cr 4:4:4
     
-    # ((4,1),(1,1),(1,1)), # 4:1:1
-    # ((4,1),(2,1),(1,1)),   # Cb 4:2:2 Cr 4:1:1
-    # ((4,1),(1,1),(2,1)),   # Cb 4:1:1 Cr 4:2:2
+    ((4,1),(1,1),(1,1)), # 4:1:1
+    ((4,1),(2,1),(1,1)),   # Cb 4:2:2 Cr 4:1:1
+    ((4,1),(1,1),(2,1)),   # Cb 4:1:1 Cr 4:2:2
     
-    # ((4,2),(1,1),(1,1)), # 4:1:0
+    ((4,2),(1,1),(1,1)), # 4:1:0
     
-    # ((1,4),(1,1),(1,1)), # 1:0.5:0
-    # ((1,4),(1,2),(1,1)),
+    ((1,4),(1,1),(1,1)), # 1:0.5:0
+    ((1,4),(1,2),(1,1)),
     
-    # ((2,4),(1,1),(1,1)), # 2:0.5:0
+    ((2,4),(1,1),(1,1)), # 2:0.5:0
     
-    # ((3,1),(1,1),(1,1)), # 3:1:1
-    # ((3,1),(3,1),(1,1)),   # Cb 4:4:4 Cr 3:1:1
-    # ((3,1),(1,1),(3,1)),   # Cb 3:1:1 Cr 4:4:4
-    # ((3,2),(3,1),(1,1)), # 3:3:0
-    # ((3,2),(1,2),(1,2)), # 3:1:1
+    ((3,1),(1,1),(1,1)), # 3:1:1
+    ((3,1),(3,1),(1,1)),   # Cb 4:4:4 Cr 3:1:1
+    ((3,1),(1,1),(3,1)),   # Cb 3:1:1 Cr 4:4:4
+    ((3,2),(3,1),(1,1)), # 3:3:0
+    ((3,2),(1,2),(1,2)), # 3:1:1
 ]
 
 implementations = {
@@ -99,25 +99,25 @@ def run_compression_tests(dataset: np.ndarray):
             res = compression.run_test(dataset, ctx)
             compression.print_clusters(res)
 
-    # # DCT method
-    # print("--- DCT methods ---")
-    # print("4:4:4 no downsampling")
-    # run_dct_compression_test( ((1,1),(1,1),(1,1)) )
-    # if dataset.shape[3] == 3:
-    #     for use_fancy_sampling,method in zip([True,False],['fancy downsampling','simple_scaling']):
-    #         print(f"4:2:0 {method}")
-    #         run_dct_compression_test( ((2,2),(1,1),(1,1)), use_fancy_sampling)
-    # print()
+    # DCT method
+    print("--- DCT methods ---")
+    print("4:4:4 no downsampling")
+    run_dct_compression_test( ((1,1),(1,1),(1,1)) )
+    if dataset.shape[3] == 3:
+        for use_fancy_sampling,method in zip([True,False],['fancy downsampling','simple_scaling']):
+            print(f"4:2:0 {method}")
+            run_dct_compression_test( ((2,2),(1,1),(1,1)), use_fancy_sampling)
+    print()
 
-    # # quality
-    # print("--- Quality ---")
-    # for quality in range(25,101):
-    #     ctx = TestContext()
-    #     ctx.quality = quality
-    #     res = compression.run_test(dataset, ctx)
-    #     output.add_print_grouped_clusters(res, quality)
-    # output.end_print_grouped_clusters()
-    # print()
+    # quality
+    print("--- Quality ---")
+    for quality in range(25,101):
+        ctx = TestContext()
+        ctx.quality = quality
+        res = compression.run_test(dataset, ctx)
+        output.add_print_grouped_clusters(res, quality)
+    output.end_print_grouped_clusters()
+    print()
     
     # sampling factor
     if dataset.shape[3] == 3:
@@ -151,12 +151,12 @@ def run_compression_tests(dataset: np.ndarray):
     # margin effects
     print("--- Margin effects ---")
     print("4:4:4 no downsampling")
-    run_margin_compression_test([1],#[0,1,2,4,7,8],
+    run_margin_compression_test([0,1,2,4,7,8],
                                 ((1,1),(1,1),(1,1)))
     if dataset.shape[3] == 3:
         for use_fancy_sampling,method in zip([True,False],['fancy downsampling','simple_scaling']):
             print(f"4:2:0 {method}")
-            run_margin_compression_test([1],#[16,15,9,8,7,3,2,1],
+            run_margin_compression_test([16,15,9,8,7,3,2,1],
                                         ((2,2),(1,1),(1,1)), use_fancy_sampling)
         print()
 

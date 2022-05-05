@@ -98,8 +98,9 @@ def print_clusters(clusters):
             print("| spatial", clusters.spatial)
 
 def _to_key(k):
-    pass
-    
+    ks = tuple(str(c) for c in k)
+    order = np.argsort(ks)
+    return tuple(k[o] for o in order)
 
 _joint = collections.OrderedDict()
 def add_print_grouped_clusters(clusters, identifier):
