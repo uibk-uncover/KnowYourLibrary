@@ -46,10 +46,9 @@ def run_test(dataset: np.ndarray, ctx: TestContext()) -> pd.DataFrame:
     images = pd.DataFrame(images)
 
     # get clusters of equal results
-
     def _prepare(df, var): return df[['version', var]].rename(
         {var: 'x'}, axis=1)
 
-    clusters = mismatch.clusters(_prepare(images, 'spatial'))
+    clusters = mismatch.get_clusters(_prepare(images, 'spatial'))
 
     return DecompressionTestResults(clusters)

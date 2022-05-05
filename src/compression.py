@@ -54,12 +54,12 @@ def run_test(dataset: np.ndarray, ctx: TestContext):
     # get clusters of equal results
     def _prepare(df, var): return df[['version', var]].rename(
         {var: 'x'}, axis=1)
-    clusters_Y = mismatch.clusters(_prepare(images, 'Y'))
-    clusters_Cb = mismatch.clusters(_prepare(images, 'Cb'))
-    clusters_Cr = mismatch.clusters(_prepare(images, 'Cr'))
+    clusters_Y = mismatch.get_clusters(_prepare(images, 'Y'))
+    clusters_Cb = mismatch.get_clusters(_prepare(images, 'Cb'))
+    clusters_Cr = mismatch.get_clusters(_prepare(images, 'Cr'))
 
     # get clusters from spatial for control
-    clusters = mismatch.clusters(_prepare(images, 'spatial'))
+    clusters = mismatch.get_clusters(_prepare(images, 'spatial'))
 
     # return
     return CompressionTestResults(clusters_Y, clusters_Cb, clusters_Cr, clusters)
