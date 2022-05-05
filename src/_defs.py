@@ -13,7 +13,7 @@ class TestContext:
     # chroma subsampling
     samp_factor: Tuple[Tuple[int, int],
                        Tuple[int, int], Tuple[int, int]] = None
-    use_chroma_sampling: bool = None
+    use_fancy_sampling: bool = None
     # DCT method
     dct_method_compression: str = None
     dct_method_decompression: str = None
@@ -21,6 +21,8 @@ class TestContext:
     quality: int = None
     # colorspace
     colorspace: str = None
+    # compressor function
+    compressor = None
 
 
 cspaces = {1: 'JCS_GRAYSCALE', 3: 'JCS_RGB'}
@@ -35,7 +37,7 @@ def compress_image(x: np.ndarray, path: str, ctx: TestContext):
     if ctx.samp_factor is not None:
         im.samp_factor = ctx.samp_factor
     # chroma subsampling
-    flags = _flags[ctx.use_chroma_sampling]
+    flags = _flags[ctx.use_fancy_sampling]
     # compress
     im.write_spatial(path, qt=ctx.quality,
                      dct_method=ctx.dct_method_compression, flags=flags)
@@ -43,7 +45,7 @@ def compress_image(x: np.ndarray, path: str, ctx: TestContext):
 
 def decompress_image(path: str, ctx: TestContext):
     # chroma subsampling
-    flags = _flags[ctx.use_chroma_sampling]
+    flags = _flags[ctx.use_fancy_sampling]
     # decompress
     return jpeglib.read_spatial(path, dct_method=ctx.dct_method_decompression, flags=flags)
 

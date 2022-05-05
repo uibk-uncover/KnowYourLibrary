@@ -83,3 +83,19 @@ def get_checkerboards(boardsize: Tuple[int, int], channels: int = 3) -> List[np.
         get_checkerboard(boardsize, tilesize, channels=channels)
         for tilesize in [(4, 4), (7, 7), (8, 8), (15, 15), (16, 16)]
     ])
+
+def generate_cropped_datasets(dataset: np.ndarray, offsets: list, base: tuple = (128,128)):
+    # dimensions
+    H,V = dataset.shape[1:3]
+    center_h,center_v = int(H/2),int(V/2)
+    base_h,base_v = base
+    # 2D offsets
+    for offset_h in offsets:
+        for offset_v in offsets:
+            min_h = center_h - int(base_h/2) - offset_h
+            min_v = center_v - int(base_v/2) - offset_v
+            max_h = center_h + int(base_h/2)
+            max_v = center_v + int(base_v/2)
+            # crop
+            yield dataset.view()[:,min_h:max_h,min_v:max_v,:]
+

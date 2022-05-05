@@ -12,25 +12,14 @@ def print_intro(dataset: np.ndarray):
     print("| Image size: ", dataset.shape[1:3])
     print("| Channels: ", dataset.shape[3], end="\n\n")
 
-
 def print_clusters(clusters):
     if type(clusters) == CompressionTestResults:
-        print("| Y", clusters.Y)
-        if mismatch.is_clustering_same(clusters.Cb, clusters.Cr):
-            print("| C*", clusters.Cb)
-        else:
-            print("| Cb", clusters.Cb)
-            print("| Cr", clusters.Cr)
-        if not mismatch.is_clustering_same(clusters.Cb, clusters.spatial):
-            print("| spatial", clusters.spatial)
-
+        pass
     if type(clusters) == DecompressionTestResults:
         print('| spatial', clusters.spatial)
 
 
 _joint = collections.OrderedDict()
-
-
 def add_print_grouped_clusters(clusters, identifier):
     """Call me with clusters and identifier of a call. I will keep track of it and print it nicely for you."""
     global _joint
@@ -45,14 +34,13 @@ def add_print_grouped_clusters(clusters, identifier):
     k1 = next(iter(_joint))
     # print legend
     if was_empty:
-        print(k1, ":", end="")
+        print("|", k1, ":", end="")
     # print until empty
     while _joint[k1]:
         print(" ", _joint[k1][0], sep="", end="")
         _joint[k1] = _joint[k1][1:]
     sys.stdout.flush()
-
-
+    
 def end_print_grouped_clusters():
     """Call me when done with add_print_grouped_clusters."""
     global _joint
@@ -62,7 +50,7 @@ def end_print_grouped_clusters():
             print()
             continue
         # print legend
-        print(k, ":", end="")
+        print("|", k, ":", end="")
         # print until empty
         while _joint[k]:
             print(" ", _joint[k][0], sep="", end="")
