@@ -154,9 +154,22 @@ def run_decompression_tests(dataset: np.ndarray):
     print("--- Python implementations ---")
     run_python_implementation(dataset)
 
-    print("--- PSNR ---")
-    run_PSNR(dataset, 'JDCT_ISLOW', 'JDCT_IFAST')
-    run_PSNR(dataset, 'JDCT_ISLOW', 'JDCT_FLOAT')
+    run_PSNR_dct(alaska, 'JDCT_ISLOW', 'JDCT_IFAST')
+    run_PSNR_dct(alaska, 'JDCT_ISLOW', 'JDCT_FLOAT')
+
+    print('------- GRAYSCALE ----------')
+    run_PSNR_dct(boss, 'JDCT_ISLOW', 'JDCT_IFAST')
+    run_PSNR_dct(boss, 'JDCT_ISLOW', 'JDCT_FLOAT')
+
+    print('---------VERSIONS----------')
+    run_PSNR_version(alaska, 'turbo', '9')
+    run_PSNR_version(alaska, '7', '9a')
+    run_PSNR_version(alaska, '6b', '9a')
+
+    print('------- QUALITY ----------')
+    run_PSNR_qf(alaska, 75, 90)
+    run_PSNR_qf(alaska, 90, 95)
+    run_PSNR_qf(alaska, 95, 100)
 
 
 if __name__ == "__main__":
@@ -174,12 +187,12 @@ if __name__ == "__main__":
     # run_decompression_tests(alaska)
     # run_decompression_tests(boss)
 
-    # run_PSNR_dct(alaska, 'JDCT_ISLOW', 'JDCT_IFAST')
-    # run_PSNR_dct(alaska, 'JDCT_ISLOW', 'JDCT_FLOAT')
+    run_PSNR_dct(alaska, 'JDCT_ISLOW', 'JDCT_IFAST')
+    run_PSNR_dct(alaska, 'JDCT_ISLOW', 'JDCT_FLOAT')
 
-    # print('------- GRAYSCALE ----------')
-    # run_PSNR_dct(boss, 'JDCT_ISLOW', 'JDCT_IFAST')
-    # run_PSNR_dct(boss, 'JDCT_ISLOW', 'JDCT_FLOAT')
+    print('------- GRAYSCALE ----------')
+    run_PSNR_dct(boss, 'JDCT_ISLOW', 'JDCT_IFAST')
+    run_PSNR_dct(boss, 'JDCT_ISLOW', 'JDCT_FLOAT')
 
     print('---------VERSIONS----------')
     run_PSNR_version(alaska, 'turbo', '9')

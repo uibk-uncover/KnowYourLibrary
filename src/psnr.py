@@ -6,8 +6,8 @@ from ._defs import *
 
 def PSNR(x_ref, x_noisy):
     """PSNR of two signals."""
-    D = x_ref[0].astype(np.float32) - \
-        x_noisy[0].astype(np.float32)
+    D = x_ref.astype(np.float32) - \
+        x_noisy.astype(np.float32)
 
     mse = (D**2).mean()
     if(mse == 0):
@@ -188,7 +188,7 @@ def TeXize_compression(res: pd.DataFrame):
 #         print(f"& ${get_mismatching_img_comp(match).sum()}$ & ${round(q5, 2)}$ & ${round(median, 2)}$& ${round(q95, 2)}$ \\")
 
 
-def return_PSNR(dataset: np.ndarray, ctx_arb: TestContext,  ctx_1: TestContext, ctx_2: TestContext, is_quality=False):
+def return_PSNR(dataset: np.ndarray, ctx_arb: TestContext,  ctx_1: TestContext, ctx_2: TestContext, is_quality=False, is_dct=False):
     print(is_quality)
     tmp = tempfile.NamedTemporaryFile()  # create temporary file
     psnr = []
@@ -210,11 +210,13 @@ def return_PSNR(dataset: np.ndarray, ctx_arb: TestContext,  ctx_1: TestContext, 
                 # decompress with each version
                 with jpeglib.version(ctx_1.v_arbitrary):
                     x_v1 = decompress_image(tmp.name, ctx_1)
-                    x_v1_spatial = x_v1.spatial  # why do I need to do that?
+                    if(not is_dct):
+                        x_v1_spatial = x_v1.spatial  # why do I need to do that?
 
                 with jpeglib.version(ctx_2.v_arbitrary):
                     x_v2 = decompress_image(tmp.name, ctx_2)
-                    x_v2_spatial = x_v2.spatial  # why do I need to do that?
+                    if(not is_dct):
+                        x_v2_spatial = x_v2.spatial  # why do I need to do that?
 
         # compute psnr
         psnr.append(PSNR(x_v1.spatial, x_v2.spatial))
@@ -223,6 +225,7 @@ def return_PSNR(dataset: np.ndarray, ctx_arb: TestContext,  ctx_1: TestContext, 
 
 def print_PSNR(dataset: np.ndarray, ctx_arb: TestContext, ctx_1: TestContext, ctx_2: TestContext, PSNR_test: str):
     is_quality = False
+    is_dct = False
     if(PSNR_test == 'version'):
         print("version: ", ctx_1.v_arbitrary,
               " vs. ", ctx_2.v_arbitrary)
@@ -230,13 +233,14 @@ def print_PSNR(dataset: np.ndarray, ctx_arb: TestContext, ctx_1: TestContext, ct
     if(PSNR_test == 'DCT'):
         print("DCT: ", ctx_1.dct_method_decompression,
               " vs. ", ctx_2.dct_method_decompression)
+        is_dct = True
 
     if(PSNR_test == 'qf'):
         print("quality: ", ctx_1.quality,
               " vs. ", ctx_2.quality)
         is_quality = True
 
-    psnr = return_PSNR(dataset, ctx_arb, ctx_1, ctx_2, is_quality)
+    psnr = return_PSNR(dataset, ctx_arb, ctx_1, ctx_2, is_quality, is_dct)
 
     print(get_mismatching_images_decomp(psnr), "/",
           dataset.shape[0], "mismatching images")
