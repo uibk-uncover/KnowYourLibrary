@@ -119,4 +119,4 @@ def read_jpeg(path: str):
 def compress_image_read_jpeg(x: np.ndarray, ctx: TestContext):
     with tempfile.NamedTemporaryFile() as tmp:
         compress_image(x, tmp.name, ctx)
-        return read_jpeg(tmp.name, ctx)
+        return read_jpeg(tmp.name)

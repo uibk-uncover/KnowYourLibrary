@@ -7,7 +7,6 @@ from src import psnr
 from src.simd import *
 from src.dataset import *
 from src._defs import samp_factors, implementations
-from . import run_decompression
 
 from pathlib import Path
 import sys
@@ -20,7 +19,7 @@ def run_compression_tests(dataset: np.ndarray):
     # TODO
     #     - PSNR
     # """
-    # # intro
+    # intro
     # print("=== Compression tests ===", end="\n\n")
     # print("--- Data ---")
     # output.print_intro(dataset)
@@ -138,3 +137,8 @@ if __name__ == "__main__":
     # decompression tests
     # run_decompression.run_decompression_tests(alaska)
     # run_decompression.run_decompression_tests(boss)
+
+    ctx = TestContext()
+    ctx.versions = ['6b', '7', '9e']
+    res = psnr.run_compression_versions_test(alaska, ctx)
+    psnr.TeXize_compression(res)
