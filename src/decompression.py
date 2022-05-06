@@ -12,7 +12,7 @@ DecompressionTestResults = collections.namedtuple(
     'DecompressionTestResults', ['spatial'])
 
 
-def run_test(dataset: np.ndarray, ctx: TestContext()) -> pd.DataFrame:
+def run_test(dataset: np.ndarray, ctx: TestContext) -> pd.DataFrame:
     sample_size, _, _, channels = dataset.shape
     ctx.colorspace = cspaces[channels]
 

@@ -167,8 +167,8 @@ if __name__ == "__main__":
 
     alaska = load_alaska_with_extrems(
         db_path / 'ALASKA_v2_TIFF_256_COLOR', sample_size, (256, 256))
-    # boss = load_boss_with_extrems(
-    #     db_path / 'BOSS_raw' / 'BOSS_from_raw', sample_size, image_dimensions)
+    boss = load_boss_with_extrems(
+        db_path / 'BOSS_raw' / 'BOSS_from_raw', sample_size, image_dimensions)
 
     print('Running decompression tests ...')
     # run_decompression_tests(alaska)
@@ -178,11 +178,11 @@ if __name__ == "__main__":
     # run_PSNR_dct(alaska, 'JDCT_ISLOW', 'JDCT_FLOAT')
 
     # print('------- GRAYSCALE ----------')
-    # run_PSNR(boss, 'JDCT_ISLOW', 'JDCT_IFAST')
-    # run_PSNR(boss, 'JDCT_ISLOW', 'JDCT_FLOAT')
+    # run_PSNR_dct(boss, 'JDCT_ISLOW', 'JDCT_IFAST')
+    # run_PSNR_dct(boss, 'JDCT_ISLOW', 'JDCT_FLOAT')
 
     print('---------VERSIONS----------')
-    run_PSNR_version(alaska, '6b', '7')
+    run_PSNR_version(alaska, 'turbo', '9')
     run_PSNR_version(alaska, '7', '9a')
     run_PSNR_version(alaska, '6b', '9a')
 
