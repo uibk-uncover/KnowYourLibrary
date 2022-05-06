@@ -86,7 +86,10 @@ class libjpeg_IO(ImageIO):
 
     def decompress(self):
         with jpeglib.version(self.version):
-            return jpeglib.read_spatial(self.name, flags=['+DO_FANCY_UPSAMPLING', '+DO_BLOCK_SMOOTHING']).spatial
+            img = jpeglib.read_spatial(
+                self.name, flags=['+DO_FANCY_UPSAMPLING', '+DO_BLOCK_SMOOTHING'])
+            # img.out_color_space = jpeglib.Colorspace('JCS_GRAYSCALE')
+            return img.spatial
 
 
 class libjpeg6b_IO(libjpeg_IO):

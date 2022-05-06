@@ -176,7 +176,7 @@ if __name__ == "__main__":
 
     db_path = Path.home() / 'Datasets'
     image_dimensions = (512, 512)
-    sample_size = 993
+    sample_size = 5
 
     alaska = load_alaska_with_extrems(
         db_path / 'ALASKA_v2_TIFF_256_COLOR', sample_size, (256, 256))
@@ -187,22 +187,22 @@ if __name__ == "__main__":
     # run_decompression_tests(alaska)
     # run_decompression_tests(boss)
 
-    run_PSNR_dct(alaska, 'JDCT_ISLOW', 'JDCT_IFAST')
-    run_PSNR_dct(alaska, 'JDCT_ISLOW', 'JDCT_FLOAT')
+    # run_PSNR_dct(alaska, 'JDCT_ISLOW', 'JDCT_IFAST')
+    # run_PSNR_dct(alaska, 'JDCT_ISLOW', 'JDCT_FLOAT')
 
-    print('------- GRAYSCALE ----------')
-    run_PSNR_dct(boss, 'JDCT_ISLOW', 'JDCT_IFAST')
-    run_PSNR_dct(boss, 'JDCT_ISLOW', 'JDCT_FLOAT')
+    # print('------- GRAYSCALE ----------')
+    # run_PSNR_dct(boss, 'JDCT_ISLOW', 'JDCT_IFAST')
+    # run_PSNR_dct(boss, 'JDCT_ISLOW', 'JDCT_FLOAT')
 
-    print('---------VERSIONS----------')
-    run_PSNR_version(alaska, 'turbo', '9')
-    run_PSNR_version(alaska, '7', '9a')
-    run_PSNR_version(alaska, '6b', '9a')
+    # print('---------VERSIONS----------')
+    # run_PSNR_version(alaska, 'turbo', '9')
+    # run_PSNR_version(alaska, '7', '9a')
+    # run_PSNR_version(alaska, '6b', '9a')
 
-    print('------- QUALITY ----------')
-    run_PSNR_qf(alaska, 75, 90)
-    run_PSNR_qf(alaska, 90, 95)
-    run_PSNR_qf(alaska, 95, 100)
+    # print('------- QUALITY ----------')
+    # run_PSNR_qf(alaska, 75, 90)
+    # run_PSNR_qf(alaska, 90, 95)
+    # run_PSNR_qf(alaska, 95, 100)
 
-    # run_python_implementation(alaska)
-    # run_python_implementation(boss)
+    run_python_implementation(alaska)
+    run_python_implementation(boss)
