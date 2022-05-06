@@ -1,5 +1,4 @@
 
-import imp
 from src import TestContext
 from src import compression
 from src import output
@@ -7,6 +6,7 @@ from src import implementation
 from src.simd import *
 from src.dataset import *
 from src._defs import samp_factors, implementations
+from . import run_decompression
 
 from pathlib import Path
 import sys
@@ -135,6 +135,7 @@ if __name__ == "__main__":
     # compression tests
     run_compression_tests(alaska)
     run_compression_tests(boss)
+
     # decompression tests
-    # run_decompression_tests(boss)
-    # run_decompression_tests(boss)
+    run_decompression.run_decompression_tests(alaska)
+    run_decompression.run_decompression_tests(boss)
