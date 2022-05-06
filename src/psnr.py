@@ -217,5 +217,5 @@ def print_PSNR(dataset: np.ndarray, ctx_arb: TestContext(), ctx_1: TestContext()
           dataset.shape[0], "mismatching images")
     if psnr:
         median, q5, q95 = get_quantile_decomp(psnr)
-    print("median: ", median, " q5: ", q5, " q95: ", q95)
+    print(" q5: ", q5, "median: ", median, " q95: ", q95)
     print(f"& ${get_mismatching_images_decomp(psnr)}$ & ${round(q5, 2)}$ & ${round(median, 2)}$ & ${round(q95, 2)}$ \\")
