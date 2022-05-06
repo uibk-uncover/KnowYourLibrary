@@ -7,6 +7,7 @@ from src import implementation
 from src.simd import *
 from src.dataset import *
 from src._defs import samp_factors, implementations
+
 from pathlib import Path
 import sys
 sys.path.append('.')
@@ -74,7 +75,7 @@ def run_compression_tests(dataset: np.ndarray):
         for use_fancy_sampling, method in zip([True, False], ['Fancy downsampling', 'Simple_scaling']):
             print(method)
             # sampling factores
-            for samp_factor in __defs.samp_factors:
+            for samp_factor in samp_factors:
                 ctx = TestContext()
                 ctx.samp_factor = samp_factor
                 ctx.use_fancy_sampling = use_fancy_sampling
@@ -132,8 +133,8 @@ if __name__ == "__main__":
         db_path / 'BOSS_raw' / 'BOSS_from_raw', sample_size, image_dimensions)
 
     # compression tests
-    # run_compression_tests(alaska)
-    # run_compression_tests(boss)
+    run_compression_tests(alaska)
+    run_compression_tests(boss)
     # decompression tests
-    run_decompression_tests(boss)
+    # run_decompression_tests(boss)
     # run_decompression_tests(boss)
