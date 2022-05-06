@@ -115,6 +115,7 @@ def read_jpeg(path: str):
     # read DCT
     return jpeglib.read_dct(path)
 
+
 def compress_image_read_jpeg(x: np.ndarray, ctx: TestContext):
     with tempfile.NamedTemporaryFile() as tmp:
         compress_image(x, tmp.name, ctx)

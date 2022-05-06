@@ -6,11 +6,9 @@ from ._defs import *
 
 def PSNR(x_ref, x_noisy):
     """PSNR of two signals."""
-    D = np.array(x_ref.spatial).astype(np.float32) - \
-        np.array(x_noisy.spatial).astype(np.float32)
+    D = np.array(x_ref).astype(np.float32) - \
+        np.array(x_noisy).astype(np.float32)
     mse = (D**2).mean()
-    if(mse == 0):
-        return np.inf
     maxi = 255  # x_ref.max().astype(np.float64)
     return np.log10(maxi**2/mse)*10
 
@@ -187,35 +185,45 @@ def TeXize_compression(res: pd.DataFrame):
 #         print(f"& ${get_mismatching_img_comp(match).sum()}$ & ${round(q5, 2)}$ & ${round(median, 2)}$& ${round(q95, 2)}$ \\")
 
 
-def return_PSNR(dataset: np.ndarray, ctx_arb: TestContext(), ctx_1: TestContext(), ctx_2: TestContext()):
+def return_PSNR(dataset: np.ndarray, ctx_arb: TestContext,  ctx_1: TestContext, ctx_2: TestContext):
     tmp = tempfile.NamedTemporaryFile()  # create temporary file
     psnr = []
     for i in range(dataset.shape[0]):
         # compress with arbitrary
-        with jpeglib.version('9e'):
+        with jpeglib.version(ctx_arb.v_arbitrary):
             compress_image(dataset[i], tmp.name, ctx_arb)
 
         # decompress with each version
-        with jpeglib.version('9e'):
+        with jpeglib.version(ctx_1.v_arbitrary):
             x_v1 = decompress_image(tmp.name, ctx_1)
 
-        with jpeglib.version('9e'):
+        with jpeglib.version(ctx_2.v_arbitrary):
             x_v2 = decompress_image(tmp.name, ctx_2)
 
         # compute psnr
-        psnr.append(PSNR(x_v1, x_v2))
+        psnr.append(PSNR(x_v1.spatial, x_v2.spatial))
     return psnr
 
 
-def print_PSNR(dataset: np.ndarray, ctx_arb: TestContext(), ctx_1: TestContext(), ctx_2: TestContext()):
-    print("DCT: ", ctx_1.dct_method_decompression,
-          " vs. ", ctx_2.dct_method_decompression)
+def print_PSNR(dataset: np.ndarray, ctx_arb: TestContext, ctx_1: TestContext, ctx_2: TestContext, PSNR_test: str):
+    if(PSNR_test == 'version'):
+        print("version: ", ctx_1.v_arbitrary,
+              " vs. ", ctx_2.v_arbitrary)
+
+    if(PSNR_test == 'DCT'):
+        print("DCT: ", ctx_1.dct_method_decompression,
+              " vs. ", ctx_2.dct_method_decompression)
+
+    if(PSNR_test == 'qf'):
+        print("quality: ", ctx_1.quality,
+              " vs. ", ctx_2.quality)
 
     psnr = return_PSNR(dataset, ctx_arb, ctx_1, ctx_2)
 
     print(get_mismatching_images_decomp(psnr), "/",
           dataset.shape[0], "mismatching images")
     if psnr:
+        print(psnr)
         median, q5, q95 = get_quantile_decomp(psnr)
     print(" q5: ", q5, "median: ", median, " q95: ", q95)
     print(f"& ${get_mismatching_images_decomp(psnr)}$ & ${round(q5, 2)}$ & ${round(median, 2)}$ & ${round(q95, 2)}$ \\")

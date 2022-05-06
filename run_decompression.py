@@ -1,10 +1,10 @@
 
 from src import psnr
-from xmlrpc.client import boolean
 from src import implementation, psnr
 from src import decompression
 from src import TestContext
 from src import output
+from src import dataset
 from src.dataset import *
 from src._defs import samp_factors, implementations
 
@@ -93,13 +93,32 @@ def run_python_implementation(dataset: np.ndarray):
     output.print_clusters(implementation_results)
 
 
-def run_PSNR(dataset: np.ndarray, dct_method_v1: str, dct_method_v2: str):
+def run_PSNR_dct(dataset: np.ndarray, dct_method_v1: str, dct_method_v2: str):
     ctx_1 = TestContext()
     ctx_1.dct_method_decompression = dct_method_v1
     ctx_2 = TestContext()
     ctx_2.dct_method_decompression = dct_method_v2
 
-    psnr.print_PSNR(dataset, TestContext(), ctx_1, ctx_2)
+    psnr.print_PSNR(dataset, TestContext(), ctx_1, ctx_2, 'DCT')
+
+
+def run_PSNR_qf(dataset: np.ndarray, qf_1: int, qf_2: int):
+    ctx_1 = TestContext()
+    ctx_1.quality = qf_1
+    ctx_2 = TestContext()
+    ctx_2.quality = qf_2
+
+    print('qf1 vs qf2 : ', qf_1, qf_2)
+    psnr.print_PSNR(dataset, TestContext(), ctx_1, ctx_2, 'qf')
+
+
+def run_PSNR_version(dataset: np.ndarray, v1: str, v2: str):
+    ctx_1 = TestContext()
+    ctx_1.v_arbitrary = v1
+    ctx_2 = TestContext()
+    ctx_2.v_arbitrary = v2
+
+    psnr.print_PSNR(dataset, TestContext(), ctx_1, ctx_2, 'version')
 
 
 def run_decompression_tests(dataset: np.ndarray):
@@ -144,19 +163,33 @@ if __name__ == "__main__":
 
     db_path = Path.home() / 'Datasets'
     image_dimensions = (512, 512)
-    sample_size = 1000
+    sample_size = 993
 
     alaska = load_alaska_with_extrems(
         db_path / 'ALASKA_v2_TIFF_256_COLOR', sample_size, (256, 256))
-    boss = load_boss_with_extrems(
-        db_path / 'BOSS_raw' / 'BOSS_from_raw', sample_size, image_dimensions)
+    # boss = load_boss_with_extrems(
+    #     db_path / 'BOSS_raw' / 'BOSS_from_raw', sample_size, image_dimensions)
 
     print('Running decompression tests ...')
     # run_decompression_tests(alaska)
     # run_decompression_tests(boss)
 
-    run_PSNR(alaska, 'JDCT_ISLOW', 'JDCT_IFAST')
-    run_PSNR(alaska, 'JDCT_ISLOW', 'JDCT_FLOAT')
-    print('------- GRAYSCALE ----------')
-    run_PSNR(boss, 'JDCT_ISLOW', 'JDCT_IFAST')
-    run_PSNR(boss, 'JDCT_ISLOW', 'JDCT_FLOAT')
+    # run_PSNR_dct(alaska, 'JDCT_ISLOW', 'JDCT_IFAST')
+    # run_PSNR_dct(alaska, 'JDCT_ISLOW', 'JDCT_FLOAT')
+
+    # print('------- GRAYSCALE ----------')
+    # run_PSNR(boss, 'JDCT_ISLOW', 'JDCT_IFAST')
+    # run_PSNR(boss, 'JDCT_ISLOW', 'JDCT_FLOAT')
+
+    print('---------VERSIONS----------')
+    run_PSNR_version(alaska, '6b', '7')
+    run_PSNR_version(alaska, '7', '9a')
+    run_PSNR_version(alaska, '6b', '9a')
+
+    print('------- QUALITY ----------')
+    run_PSNR_qf(alaska, 75, 90)
+    run_PSNR_qf(alaska, 90, 95)
+    run_PSNR_qf(alaska, 95, 100)
+
+    # run_python_implementation(alaska)
+    # run_python_implementation(boss)
