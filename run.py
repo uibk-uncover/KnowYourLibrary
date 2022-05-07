@@ -123,7 +123,7 @@ if __name__ == "__main__":
 
     db_path = Path.home() / 'Datasets'
     image_dimensions = (512, 512)
-    sample_size = 10
+    sample_size = 1000
 
     alaska = load_alaska_with_extrems(
         db_path / 'ALASKA_v2_TIFF_256_COLOR', sample_size, (256, 256))

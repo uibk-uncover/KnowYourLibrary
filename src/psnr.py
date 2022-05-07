@@ -29,7 +29,6 @@ def get_quantile_decomp(psnr):
     q95 = np.quantile(psnr, .95)
     return median, q5, q95
 
-
 def DCT_match_nz(dct1, dct2):
     (Y1, Cb1, Cr1), (Y2, Cb2, Cr2) = dct1, dct2
     dY = (Y1[Y1 != 0] == Y2[Y1 != 0]).sum()
@@ -142,28 +141,43 @@ def run_compression_versions_test(dataset: np.ndarray, ctx: TestContext):
                         (jpeg2[i].Y, jpeg2[i].Cb, jpeg2[i].Cr),
                     )
                 )
-
     return pd.DataFrame(matches)
 
 
 def TeXize_compression(res: pd.DataFrame):
     def quantile(n):
         def quantile_(x):
-            return np.quantile(x, n)
+            return np.quantile(x[np.isfinite(x)],n)
         q = '%4.2f' % n
         quantile_.__name__ = f'q{q[2:]}'
         return quantile_
-    #        print(get_missing_img_comp(match).sum(), "/", alaska.shape[0], "missing images")
-    #    print(get_mismatching_img_comp(match).sum(), "/", alaska.shape[0], "mismatching images")
+    def match(x):
+        return int((x < 1).sum())
+    # aggregate quantiles
     res = (
         res
         .groupby(['version', 'descriptor'])
         .agg({
-            'nz': [quantile(.05), quantile(.5), quantile(.95)],
+            'nz': [match],
             'log': [quantile(.05), quantile(.5), quantile(.95)]})
         .reset_index(drop=False)
     )
-    print(res)
+    # flatten multilevel columns
+    res.columns = ['.'.join([c for c in col if c != '']) for col in res.columns]
+    # format versions
+    res['versions'] = res.apply(lambda r: f'{r.version} vs {r.descriptor}', axis=1)
+    # format latex table
+    formatters = {
+        'versions': lambda i: i.replace('6b','6b/turbo').replace('7','7--9d'),
+        'nz.match': lambda i: '%d' % i,
+        'log.q05': lambda i: '%3.2f' % i,
+        'log.q50': lambda i: '%3.2f' % i,
+        'log.q95': lambda i: '%3.2f' % i,
+    }
+    print(
+        res[['versions','nz.match','log.q05','log.q50','log.q95']]
+        .to_latex(header=False, index=False, formatters=formatters)
+    )
 
 
 # def print_evaluation_comp_para(**comp):

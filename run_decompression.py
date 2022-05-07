@@ -66,7 +66,7 @@ def run_sampling_factor(dataset: np.ndarray):
         output.end_print_grouped_clusters()
 
 
-def run_margin_effects(dataset: np.ndarray, offsets: list[int], samp_factor=None, use_fancy_sampling=None):
+def run_margin_effects(dataset: np.ndarray, offsets: List[int], samp_factor=None, use_fancy_sampling=None):
     ctx = TestContext()
     ctx.samp_factor = samp_factor
     ctx.use_fancy_sampling = use_fancy_sampling
@@ -78,19 +78,23 @@ def run_margin_effects(dataset: np.ndarray, offsets: list[int], samp_factor=None
     output.end_print_grouped_clusters()
 
 
-def run_margin_with_sampling(dataset: np.ndarray, offsets: list[int]):
+def run_margin_with_sampling(dataset: np.ndarray, offsets: List[int]):
     for use_fancy_sampling, method in zip([True, False], ['fancy upsampling', 'simple scaling']):
         print(f"4:2:0 {method}")
         run_margin_effects(dataset, offsets, use_fancy_sampling)
 
 
 def run_python_implementation(dataset: np.ndarray):
+    output.print_intro(dataset)
     ctx = TestContext()
     ctx.versions = implementations
-    ctx.decompressor = implementation.io_decompressor
-
+    if dataset.shape[3] == 3:
+        ctx.decompressor = implementation.io_decompressor_rgb
+    else:
+        ctx.decompressor = implementation.io_decompressor_grayscale
     implementation_results = decompression.run_test(dataset, ctx)
     output.print_clusters(implementation_results)
+    print()
 
 
 def run_PSNR_dct(dataset: np.ndarray, dct_method_v1: str, dct_method_v2: str):
@@ -176,7 +180,7 @@ if __name__ == "__main__":
 
     db_path = Path.home() / 'Datasets'
     image_dimensions = (512, 512)
-    sample_size = 5
+    sample_size = 993
 
     alaska = load_alaska_with_extrems(
         db_path / 'ALASKA_v2_TIFF_256_COLOR', sample_size, (256, 256))
@@ -204,5 +208,6 @@ if __name__ == "__main__":
     # run_PSNR_qf(alaska, 90, 95)
     # run_PSNR_qf(alaska, 95, 100)
 
+    print('------- PYTHON IMPLEMENTATIONS ----------')
     run_python_implementation(alaska)
     run_python_implementation(boss)
