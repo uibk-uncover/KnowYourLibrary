@@ -169,14 +169,14 @@ def TeXize_compression(res: pd.DataFrame):
     # format latex table
     formatters = {
         'versions': lambda i: i.replace('6b','6b/turbo').replace('7','7--9d'),
-        'nz.match': lambda i: '%d' % i,
-        'log.q05': lambda i: '%3.2f' % i,
-        'log.q50': lambda i: '%3.2f' % i,
-        'log.q95': lambda i: '%3.2f' % i,
+        'nz.match': lambda i: '$%d$' % i,
+        'log.q05': lambda i: '$%3.2f$' % i,
+        'log.q50': lambda i: '$%3.2f$' % i,
+        'log.q95': lambda i: '$%3.2f$' % i,
     }
     print(
         res[['versions','nz.match','log.q05','log.q50','log.q95']]
-        .to_latex(header=False, index=False, formatters=formatters)
+        .to_latex(header=False, index=False, formatters=formatters, escape=False)
     )
 
 
