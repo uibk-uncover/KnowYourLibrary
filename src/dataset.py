@@ -30,6 +30,7 @@ def load_alaska_with_extremes(db_path: Path, sample_size: int, img_dimensions: T
     db = np.array([
         plt.imread(file)
         for file in [*db_names, most_saturated[0], least_saturated[0]]
+        if file.exists()
     ])
 
     return np.concatenate([db, checkerboard], axis=0)

@@ -20,7 +20,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-> :exclamation: Note that installation takes a few minutes. This is because libjpeg versions (package [jpeglib](https://pypi.org/project/jpeglib/)) are distributed as source code and compiled for the target platform on the endpoint.
+> :exclamation: Note that installation takes a few minutes. This is because the libjpeg versions (part of package [jpeglib](https://pypi.org/project/jpeglib/)) are source distributions and only compiled on your computer.
 
 ## Usage
 
@@ -46,7 +46,27 @@ Using this interface, you can specify, whether to test only compression, only de
 
 By default, program uses 1000 images + certain specifically chosen (with maximal and minimal saturation, synthetic "checkerboard" with sharp edges etc.). Default location of alaska dataset is `~/Datasets/ALASKA_v2_TIFF_256_COLOR`, for boss it is `~/Datasets/BOSS_tiles`.
 
-You can specify
+### Examples
+
+To run compression test on alaska in directory `/alaska` and boss in default directory, type
+
+```bash
+python run.py compression -i "alaska=/alaska;boss"
+```
+
+To run decompression test on boss in directory `/data/boss`, but only use 30 images, type
+
+```bash
+python run.py decompression -i "boss=/data/boss" -n 30
+```
+
+There are example images in this repository. Execute tests on them only with
+
+```bash
+python run.py all -i "alaska=./data/alaska;boss=./data/boss" -n 15
+```
+
+
 
 ## Repository structure
 

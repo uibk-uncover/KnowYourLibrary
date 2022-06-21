@@ -1,3 +1,6 @@
 venv
 __pycache__
 PoC/lena_*.jpeg
+data/alaska/*
+data/boss/*
+.DS_Store

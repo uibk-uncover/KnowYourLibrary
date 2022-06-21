@@ -34,9 +34,8 @@ def parse_args():
             datasets[dataset] = path
     else:
         datasets = PATH_DEFAULT
-    
     return {
-        'mode': args.mode,
+        'mode': args.mode[0],
         'path': datasets,
         'number': args.number if args.number else 1000,
     }
