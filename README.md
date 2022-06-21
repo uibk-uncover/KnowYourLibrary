@@ -64,7 +64,6 @@ Following files helps reproduce easily.
 - `requirements.txt` = Python dependencies
 - `Dockerfile` = Docker file
 - `data/alaska`, `data/boss` = 15 example files from each dataset, to see limited results without need to get full datasets
-- `PoC/` = proof of concept, single module implementation on Lena image
 
 ## References
 
