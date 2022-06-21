@@ -211,3 +211,9 @@ if __name__ == "__main__":
     print('------- PYTHON IMPLEMENTATIONS ----------')
     run_python_implementation(alaska)
     run_python_implementation(boss)
+
+
+
+# direct execution
+if __name__ == "__main__":
+    raise NotImplementedError("module not intended to be executed directly, please use run.py")

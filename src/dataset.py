@@ -16,14 +16,17 @@ def get_dataset(db_path: Path, sample_size: int) -> List[str]:
     return random.sample(db_names, sample_size)
 
 
-def load_alaska_with_extrems(db_path: Path, sample_size: int, img_dimensions: Tuple[int, int]) -> np.ndarray:
-
-    db_names = get_dataset(db_path, sample_size)
+def load_alaska_with_extremes(db_path: Path, sample_size: int, img_dimensions: Tuple[int, int]) -> np.ndarray:
+    db_path = Path(db_path)
+    db_names = get_dataset(db_path, max(sample_size,0))
     checkerboard = get_checkerboards(img_dimensions, 3)
     # TODO: write function
     most_saturated = (db_path / '10343.tif', 98491)
     least_saturated = (db_path / '05887.tif', 78128)
 
+    # for file in [*db_names, most_saturated[0], least_saturated[0]]:
+    #     print(file)
+        
     db = np.array([
         plt.imread(file)
         for file in [*db_names, most_saturated[0], least_saturated[0]]
@@ -32,13 +35,13 @@ def load_alaska_with_extrems(db_path: Path, sample_size: int, img_dimensions: Tu
     return np.concatenate([db, checkerboard], axis=0)
 
 
-def load_boss_with_extrems(db_path: Path, sample_size: int, img_dimensions: Tuple[int, int]) -> np.ndarray:
-
-    db_names = get_dataset(db_path, sample_size)
+def load_boss_with_extremes(db_path: Path, sample_size: int, img_dimensions: Tuple[int, int]) -> np.ndarray:
+    db_path = Path(db_path)
+    db_names = get_dataset(db_path, max(sample_size,0))
     checkerboard = get_checkerboards(img_dimensions, 1)
     most_saturated = (db_path / '6900_1_3.png', 262144)
     least_saturated = (db_path / '6155_1_6.png', 88944)
-
+    
     db = np.array([
         cv2.imread(str(file), cv2.IMREAD_GRAYSCALE)
         for file in [*db_names, most_saturated[0], least_saturated[0]]
