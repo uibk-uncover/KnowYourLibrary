@@ -20,7 +20,8 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-**Warning**
+:exclamation:
+
 Note that installation takes a few minutes. This is because libjpeg versions (package [jpeglib](https://pypi.org/project/jpeglib/)) are distributed as source code and compiled for the target platform on the endpoint.
 
 ## Usage
