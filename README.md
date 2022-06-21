@@ -1,6 +1,6 @@
 # KnowYourLibrary
 
-This is an official code repository for paper *Benes, Hofer, Böhme: Know Your Library: How the libjpeg Version Influences Compression and Decompression Results* [[1](#1)], published by its authors. It contains codebase to perform systematic comparison of all libjpeg versions since 1998.
+This is the code repository for the paper *Know Your Library: How the libjpeg Version Influences Compression and Decompression Results* [[1](#1)]. It contains the codebase to replicate the systematic comparison of all libjpeg versions between 1998 and 2022.
 
 
 ## Setup
@@ -20,17 +20,17 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-> :exclamation: Note that installation takes a few minutes. This is because the libjpeg versions (part of package [jpeglib](https://pypi.org/project/jpeglib/)) are source distributions and only compiled on your computer.
+> :exclamation: Note that the installation takes a few minutes. This is because the libjpeg versions (part of package [jpeglib](https://pypi.org/project/jpeglib/)) are source distributions to be compiled on your computer.
 
 ## Usage
 
-The test cases are executed with following command
+The test cases are executed with following command.
 
 ```bash
 python run.py
 ```
 
-The script contains parameterization of the execution using various parameters. Usage including available parameters is shown with parameter `--help`.
+Usage and the available parameters are shown with argument `--help`.
 
 
 ```bash
@@ -41,20 +41,20 @@ python run.py
     [--help|-h]
 ```
 
-Using this interface, you can specify, whether to test only compression, only decompression or both. You can also specify, whether to run for colored (using alaska dataset [[2]](#2)) or grayscale images (using BOSSBase dataset [[3]](#3)) and overwrite default location with custom one for any of them. In addition, you can choose, how many images from dataset will be used.
+Using this interface, you can specify whether to test compression, decompression or both. You can also specify whether to run for colored (using the ALASKA dataset [[2]](#2)) or grayscale images (using the BOSSBase dataset [[3]](#3)). You can overwrite the default location with a custom one. In addition you can choose how many images from dataset will be used.
 
 
-By default, program uses at most 1000 images + certain specifically chosen (with maximal and minimal saturation, synthetic "checkerboard" with sharp edges etc.). Default location of alaska dataset is `~/Datasets/ALASKA_v2_TIFF_256_COLOR`, for boss it is `~/Datasets/BOSS_tiles`.
+By default program uses at most 1000 images + certain specifically chosen (with maximal and minimal saturation, synthetic "checkerboard" with sharp edges etc.). The default location of the ALASKA dataset is `~/Datasets/ALASKA_v2_TIFF_256_COLOR`, for BOSSBase it is `~/Datasets/BOSS_tiles`.
 
 ### Examples
 
-To run compression test on alaska in directory `/alaska` and boss in default directory, type
+To run compression test on ALASKA in directory `/alaska` and BOSSBase in default directory, type
 
 ```bash
 python run.py compression -i "alaska=/alaska;boss"
 ```
 
-To run decompression test on boss in directory `/data/boss`, but only use 30 images, type
+To run decompression test on BOSSBase in directory `/data/boss`, but only use 30 images, type
 
 ```bash
 python run.py decompression -i "boss=/data/boss" -n 30
@@ -78,7 +78,7 @@ Following files and directories contain the experiments.
 - `src/` = Python implementation
 - `data/*.sha256` = SHA256 hashes of the files
 
-Following files helps reproduce easily.
+The following files are intended to facilitate the repuducibility.
 
 - `requirements.txt` = Python dependencies
 - `Dockerfile` = Docker file
