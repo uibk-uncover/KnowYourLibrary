@@ -56,7 +56,7 @@ Following files and directories contain the experiments.
 - `run.py` = entrypoint for executing
 - `run_compression.py` = structure of compression tests
 - `run_decompression.py` = structure of decompression tests
-- `src` = implementation
+- `src/` = Python implementation
 - `data/*.sha256` = SHA256 hashes of the files
 
 Following files helps reproduce easily.
@@ -64,6 +64,7 @@ Following files helps reproduce easily.
 - `requirements.txt` = Python dependencies
 - `Dockerfile` = Docker file
 - `data/alaska`, `data/boss` = 15 example files from each dataset, to see limited results without need to get full datasets
+- `PoC/` = proof of concept, single module implementation on Lena image
 
 ## References
 
