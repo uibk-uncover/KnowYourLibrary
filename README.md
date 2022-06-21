@@ -44,7 +44,7 @@ python run.py
 Using this interface, you can specify, whether to test only compression, only decompression or both. You can also specify, whether to run for colored (using alaska dataset [[2]](#2)) or grayscale images (using BOSSBase dataset [[3]](#3)) and overwrite default location with custom one for any of them. In addition, you can choose, how many images from dataset will be used.
 
 
-By default, program uses 1000 images + certain specifically chosen (with maximal and minimal saturation, synthetic "checkerboard" with sharp edges etc.). Default location of alaska dataset is `~/Datasets/ALASKA_v2_TIFF_256_COLOR`, for boss it is `~/Datasets/BOSS_tiles`.
+By default, program uses at most 1000 images + certain specifically chosen (with maximal and minimal saturation, synthetic "checkerboard" with sharp edges etc.). Default location of alaska dataset is `~/Datasets/ALASKA_v2_TIFF_256_COLOR`, for boss it is `~/Datasets/BOSS_tiles`.
 
 ### Examples
 

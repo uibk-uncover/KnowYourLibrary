@@ -13,12 +13,13 @@ def get_dataset(db_path: Path, sample_size: int) -> List[str]:
     db_names = [db_path / file for file in os.listdir(db_path)]
     print('Loaded', len(db_names), 'images from', str(db_path))
     random.seed(13245)
-    return random.sample(db_names, sample_size)
+    print()
+    return random.sample(db_names, min(len(db_names),sample_size))
 
 
 def load_alaska_with_extremes(db_path: Path, sample_size: int, img_dimensions: Tuple[int, int]) -> np.ndarray:
     db_path = Path(db_path)
-    db_names = get_dataset(db_path, max(sample_size,0))
+    db_names = get_dataset(db_path, sample_size)
     checkerboard = get_checkerboards(img_dimensions, 3)
     # TODO: write function
     most_saturated = (db_path / '10343.tif', 98491)
@@ -38,7 +39,7 @@ def load_alaska_with_extremes(db_path: Path, sample_size: int, img_dimensions: T
 
 def load_boss_with_extremes(db_path: Path, sample_size: int, img_dimensions: Tuple[int, int]) -> np.ndarray:
     db_path = Path(db_path)
-    db_names = get_dataset(db_path, max(sample_size,0))
+    db_names = get_dataset(db_path, sample_size)
     checkerboard = get_checkerboards(img_dimensions, 1)
     most_saturated = (db_path / '6900_1_3.png', 262144)
     least_saturated = (db_path / '6155_1_6.png', 88944)
