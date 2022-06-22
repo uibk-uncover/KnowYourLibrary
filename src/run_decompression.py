@@ -51,7 +51,6 @@ def run_sampling_factor(dataset: np.ndarray):
     ctx = TestContext()
 
     for use_fancy_sampling, method in zip([True, False], ['Fancy upsampling', 'Simple scaling']):
-        print(method)
         ctx.use_fancy_sampling = use_fancy_sampling
 
         for samp_factor in samp_factors:
@@ -64,22 +63,24 @@ def run_sampling_factor(dataset: np.ndarray):
         output.end_print_grouped_clusters()
 
 
-def run_margin_effects(dataset: np.ndarray, offsets: List[int], samp_factor=None, use_fancy_sampling=None):
-    ctx = TestContext()
-    ctx.samp_factor = samp_factor
-    ctx.use_fancy_sampling = use_fancy_sampling
-
+def run_margin_effects(dataset: np.ndarray, offsets: List[int], samp_factor=None, use_fancy_sampling=None, mod=8):
     for data in generate_cropped_datasets(dataset, offsets):
-        offset = (data.shape[1] % 8, data.shape[2] % 8)
+        offset = (data.shape[1] % mod, data.shape[2] % mod)
+        
+        ctx = TestContext()
+        ctx.samp_factor = samp_factor
+        ctx.use_fancy_sampling = use_fancy_sampling
+        
         margin_result = decompression.run_test(data, ctx)
-        output.add_print_grouped_clusters(margin_result.spatial, offset)
-    output.end_print_grouped_clusters()
+        print(margin_result, offset)
+        #output.add_print_grouped_clusters(margin_result.spatial, offset)
+    #output.end_print_grouped_clusters()
 
 
-def run_margin_with_sampling(dataset: np.ndarray, offsets: List[int]):
+def run_margin_with_sampling(dataset: np.ndarray, offsets: List[int], mod=8):
     for use_fancy_sampling, method in zip([True, False], ['fancy upsampling', 'simple scaling']):
         print(f"4:2:0 {method}")
-        run_margin_effects(dataset, offsets, use_fancy_sampling)
+        run_margin_effects(dataset, offsets, ((2,2),(1,1),(1,1)), use_fancy_sampling, mod)
 
 
 def run_python_implementation(dataset: np.ndarray):
@@ -150,10 +151,9 @@ def run_decompression_tests(dataset: np.ndarray):
     run_margin_effects(dataset, [0, 1, 2, 4, 7, 8],
                        ((1, 1), (1, 1), (1, 1)))
     if data_is_color:
-        run_margin_with_sampling(dataset, [16, 15, 9, 8, 7, 3, 2, 1],
-                                 ((2, 2), (1, 1), (1, 1)))
+        run_margin_with_sampling(dataset, [16, 15, 9, 8, 7, 3, 2, 1], 16)
 
-    print("--- Python implementations ---")
+    print('------- PYTHON IMPLEMENTATIONS ----------')
     run_python_implementation(dataset)
 
     run_PSNR_dct(alaska, 'JDCT_ISLOW', 'JDCT_IFAST')
@@ -172,44 +172,6 @@ def run_decompression_tests(dataset: np.ndarray):
     run_PSNR_qf(alaska, 75, 90)
     run_PSNR_qf(alaska, 90, 95)
     run_PSNR_qf(alaska, 95, 100)
-
-
-if __name__ == "__main__":
-
-    db_path = Path.home() / 'Datasets'
-    image_dimensions = (512, 512)
-    sample_size = 993
-
-    alaska = load_alaska_with_extrems(
-        db_path / 'ALASKA_v2_TIFF_256_COLOR', sample_size, (256, 256))
-    boss = load_boss_with_extrems(
-        db_path / 'BOSS_raw' / 'BOSS_from_raw', sample_size, image_dimensions)
-
-    print('Running decompression tests ...')
-    # run_decompression_tests(alaska)
-    # run_decompression_tests(boss)
-
-    # run_PSNR_dct(alaska, 'JDCT_ISLOW', 'JDCT_IFAST')
-    # run_PSNR_dct(alaska, 'JDCT_ISLOW', 'JDCT_FLOAT')
-
-    # print('------- GRAYSCALE ----------')
-    # run_PSNR_dct(boss, 'JDCT_ISLOW', 'JDCT_IFAST')
-    # run_PSNR_dct(boss, 'JDCT_ISLOW', 'JDCT_FLOAT')
-
-    # print('---------VERSIONS----------')
-    # run_PSNR_version(alaska, 'turbo', '9')
-    # run_PSNR_version(alaska, '7', '9a')
-    # run_PSNR_version(alaska, '6b', '9a')
-
-    # print('------- QUALITY ----------')
-    # run_PSNR_qf(alaska, 75, 90)
-    # run_PSNR_qf(alaska, 90, 95)
-    # run_PSNR_qf(alaska, 95, 100)
-
-    print('------- PYTHON IMPLEMENTATIONS ----------')
-    run_python_implementation(alaska)
-    run_python_implementation(boss)
-
 
 
 # direct execution

@@ -83,9 +83,9 @@ def run_compression_tests(dataset: np.ndarray):
             compression.end_print_grouped_clusters()
         print(end="\n\n")
 
-    def run_margin_compression_test(offsets, samp_factor=None, use_fancy_sampling=None):
+    def run_margin_compression_test(offsets, samp_factor=None, use_fancy_sampling=None, mod=8):
         for d in generate_cropped_datasets(dataset, offsets):
-            offset = (d.shape[1] % 8, d.shape[2] % 8)
+            offset = (d.shape[1] % mod, d.shape[2] % mod)
             ctx = TestContext()
             ctx.samp_factor = samp_factor
             ctx.use_fancy_sampling = use_fancy_sampling
@@ -103,8 +103,9 @@ def run_compression_tests(dataset: np.ndarray):
         for use_fancy_sampling, method in zip([True, False], ['fancy downsampling', 'simple_scaling']):
             print(f"4:2:0 {method}")
             run_margin_compression_test([16, 15, 9, 8, 7, 3, 2, 1],
-                                        ((2, 2), (1, 1), (1, 1)), use_fancy_sampling)
-        print(end="\n\n")
+                                        ((2, 2), (1, 1), (1, 1)), use_fancy_sampling, mod=16)
+            print()
+        print()
 
     # Python implementations
     print("--- Python implementations ---")
@@ -125,6 +126,7 @@ def run_compression_tests(dataset: np.ndarray):
     res = psnr.run_compression_versions_test(dataset, ctx)
     psnr.TeXize_compression(res)
     print(end="\n\n")
+
 
 # direct execution
 if __name__ == "__main__":

@@ -29,16 +29,20 @@ pip install -r docker/requirements.txt
 For convenience, the repo contains docker environment that you can use. Build the docker image by
 
 ```bash
-docker build docker/ -t knowyourlibrary:latest
+docker build -t knowyourlibrary:latest -f docker/Dockerfile .
 ```
 
 After 15 minutes, the image is built. Run the experiments with
 
 ```bash
-docker run knowyourlibrary:latest \
+docker run \
+    --rm -it \
+    --platform linux/amd64 \
+    knowyourlibrary:latest \
     python src/run.py
 ```
 
+The default data directories are `/root/Datasets/*`.
 
 
 
