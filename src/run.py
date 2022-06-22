@@ -35,7 +35,7 @@ def parse_args():
     else:
         datasets = PATH_DEFAULT
     return {
-        'mode': args.mode,
+        'mode': list(args.mode)[0],
         'path': datasets,
         'number': args.number if args.number else 1000,
     }
@@ -67,7 +67,7 @@ if __name__ == "__main__":
             db_path         = conf['path']['alaska'],
             sample_size     = conf['number'],
             img_dimensions  = (256, 256))
-        #MODE_FUNCTION[conf['mode']](alaska)
+        MODE_FUNCTION[conf['mode']](alaska)
     
     # run boss
     if 'boss' in conf['path']:

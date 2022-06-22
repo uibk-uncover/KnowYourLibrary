@@ -12,29 +12,49 @@ git clone https://github.com/uibk-uncover/KnowYourLibrary
 cd KnowYourLibrary
 ```
 
-Install the Python dependencies in a clean virtual environment.
+Install the Python dependencies in a clean virtual environment. You might need to setup opencv.
 
 ```
 python3 -m venv venv
 source venv/bin/activate
-pip install -r requirements.txt
+pip install -r docker/requirements.txt
 ```
 
-> :exclamation: Note that the installation takes a few minutes.  This is because the libjpeg versions (part of package [jpeglib](https://pypi.org/project/jpeglib/)) are source distributions to be compiled on your computer.
+> :warning: Note that the installation takes a few minutes.  This is because the libjpeg versions (part of package [jpeglib](https://pypi.org/project/jpeglib/)) are source distributions to be compiled on your computer.
+
+> :exclamation: You might need to setup opencv beforehand. To simplify, there is a Dockerfile that you can use. Follow the instructions [below](#docker).
+
+### Docker
+
+For convenience, the repo contains docker environment that you can use. Build the docker image by
+
+```bash
+docker build docker/ -t knowyourlibrary:latest
+```
+
+After 15 minutes, the image is built. Run the experiments with
+
+```bash
+docker run knowyourlibrary:latest \
+    python src/run.py
+```
+
+
+
 
 ## Usage
 
 The test cases are executed with the following command.
 
 ```bash
-python run.py
+python src/run.py
 ```
 
 The script accepts the argument `--help` for usage instructions and availaible options.
 
 
 ```bash
-python run.py
+python src/run.py
     [all|compression|decompression]
     [-i|--input "alaska=<path-to-alaska>;boss=<path-to-boss>"]
     [-n|--number <number-of-samples>]
@@ -45,6 +65,8 @@ Using this interface, you can specify whether to test compression, decompression
 
 
 By default program uses at most 1000 images + certain specifically chosen (with maximal and minimal saturation, synthetic "checkerboard" with sharp edges etc.).  The default location of the ALASKA dataset is `~/Datasets/ALASKA_v2_TIFF_256_COLOR`, for BOSSBase it is `~/Datasets/BOSS_tiles`.
+
+
 
 ### Examples
 
