@@ -3,14 +3,14 @@ import argparse
 import os
 from pathlib import Path
 
-from src import TestContext
-from src import compression
-from src import output
-from src import implementation
-from src import psnr
-from src.dataset import *
-from src.simd import *
-from src._defs import samp_factors, implementations
+from knowyourlibrary import TestContext
+from knowyourlibrary import compression
+from knowyourlibrary import output
+from knowyourlibrary import implementation
+from knowyourlibrary import psnr
+from knowyourlibrary.dataset import *
+from knowyourlibrary.simd import *
+from knowyourlibrary._defs import samp_factors, implementations
 
 
 def run_compression_tests(dataset: np.ndarray):

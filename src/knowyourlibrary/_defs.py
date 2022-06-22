@@ -3,7 +3,7 @@ import jpeglib
 import numpy as np
 import tempfile
 from typing import Tuple
-from src import implementation
+from . import implementation
 import sys
 
 # sampling factor

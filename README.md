@@ -82,7 +82,7 @@ The following files are intended to facilitate the repuducibility.
 
 - `requirements.txt` = Python dependencies
 - `Dockerfile` = Docker file
-- `data/alaska`, `data/boss` = 15 example files from each dataset, to see limited results without need to get full datasets
+- `data/alaska`, `data/boss` = 15 example files from each dataset, to see limited results without need to get full datasets + 2 additional (the most and the least saturated)
 
 ## References
 

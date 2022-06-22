@@ -24,9 +24,6 @@ def load_alaska_with_extremes(db_path: Path, sample_size: int, img_dimensions: T
     # TODO: write function
     most_saturated = (db_path / '10343.tif', 98491)
     least_saturated = (db_path / '05887.tif', 78128)
-
-    # for file in [*db_names, most_saturated[0], least_saturated[0]]:
-    #     print(file)
         
     db = np.array([
         plt.imread(file)
@@ -47,7 +44,7 @@ def load_boss_with_extremes(db_path: Path, sample_size: int, img_dimensions: Tup
     db = np.array([
         cv2.imread(str(file), cv2.IMREAD_GRAYSCALE)
         for file in [*db_names, most_saturated[0], least_saturated[0]]
-    ])
+    ], dtype=np.uint8)
     db = np.expand_dims(db, axis=3)
     return np.concatenate([db, checkerboard], axis=0)
 

@@ -6,7 +6,7 @@ import sys
 sys.path.append('.')
 import run_compression as C
 import run_decompression as D
-from src.dataset import *
+from knowyourlibrary.dataset import *
 
 PATH_DEFAULT = {
     'alaska':   str(Path.home() / 'Datasets' / 'ALASKA_v2_TIFF_256_COLOR'),
@@ -67,7 +67,7 @@ if __name__ == "__main__":
             db_path         = conf['path']['alaska'],
             sample_size     = conf['number'],
             img_dimensions  = (256, 256))
-        MODE_FUNCTION[conf['mode']](alaska)
+        #MODE_FUNCTION[conf['mode']](alaska)
     
     # run boss
     if 'boss' in conf['path']:

@@ -1,16 +1,14 @@
 
-from src import psnr
-from src import implementation, psnr
-from src import decompression
-from src import TestContext
-from src import output
-from src import dataset
-from src.dataset import *
-from src._defs import samp_factors, implementations
-
 from pathlib import Path
-import sys
-sys.path.append('.')
+
+from knowyourlibrary import psnr
+from knowyourlibrary import implementation, psnr
+from knowyourlibrary import decompression
+from knowyourlibrary import TestContext
+from knowyourlibrary import output
+from knowyourlibrary import dataset
+from knowyourlibrary.dataset import *
+from knowyourlibrary._defs import samp_factors, implementations
 
 
 def run_baseline(dataset: np.ndarray):
