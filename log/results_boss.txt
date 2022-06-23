@@ -1,0 +1,27 @@
+Loaded 17 images from data/boss
+
+=== Compression tests ===
+
+--- Data ---
+Data:
+| Data size: 24
+| Image size: (512, 512)
+| Channels: 1
+
+is turbo faster in decompression than 6b: p-value 3.594047864837218e-08
+
+--- baseline ---
+| Y (('6b', 'turbo210', '7', '8', '8a', '8b', '8c', '8d', '9', '9a', '9b', '9c', '9d', '9e'),)
+
+
+--- DCT methods ---
+4:4:4 no downsampling
+Method: JDCT_ISLOW
+| Y (('6b', 'turbo210', '7', '8', '8a', '8b', '8c', '8d', '9', '9a', '9b', '9c', '9d', '9e'),)
+Method: JDCT_FLOAT
+| Y (('6b', 'turbo210', '7', '8', '8a', '8b', '8c', '8d', '9', '9a', '9b', '9c', '9d', '9e'),)
+Method: JDCT_IFAST
+| Y (('6b', 'turbo210', '7', '8', '8a', '8b', '8c', '8d', '9', '9a', '9b', '9c', '9d', '9e'),)
+
+--- Quality ---
+| (('6b', 'turbo210', '7', '8', '8a', '8b', '8c', '8d', '9', '9a', '9b', '9c', '9d', '9e'),) : 25:Y 25:spatial 26:Y 26:spatial 27:Y 27:spatial 28:Y 28:spatial 29:Y 29:spatial 30:Y 30:spatial 31:Y 31:spatial 32:Y 32:spatial 33:Y 33:spatial 34:Y 34:spatial 35:Y 35:spatial 36:Y 36:spatial 37:Y 37:spatial

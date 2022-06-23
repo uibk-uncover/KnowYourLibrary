@@ -1,0 +1,14 @@
+Loaded 23152 images from /Users/martin/Datasets/BOSS_tiles
+
+=== Compression tests ===
+
+--- Data ---
+Data:
+| Data size: 107
+| Image size: (512, 512)
+| Channels: 1
+
+is turbo faster in decompression than 6b: p-value 2.567007782833033e-58
+
+--- baseline ---
+| Y (('6b', 'turbo210', '7', '8', '8a', '8b', '8c', '8d', '9', '9a', '9b', '9c', '9d', '9e'),)

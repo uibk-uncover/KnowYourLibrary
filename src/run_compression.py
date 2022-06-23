@@ -59,7 +59,8 @@ def run_compression_tests(dataset: np.ndarray):
 
     # quality
     print("--- Quality ---")
-    for quality in range(0, 101):
+    for quality in range(25, 101):
+    #for quality in range(0, 101):
         ctx = TestContext()
         ctx.quality = quality
         res = compression.run_test(dataset, ctx)

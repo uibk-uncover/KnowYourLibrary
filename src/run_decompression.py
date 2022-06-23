@@ -51,6 +51,7 @@ def run_sampling_factor(dataset: np.ndarray):
     ctx = TestContext()
 
     for use_fancy_sampling, method in zip([True, False], ['Fancy upsampling', 'Simple scaling']):
+        print(method)
         ctx.use_fancy_sampling = use_fancy_sampling
 
         for samp_factor in samp_factors:
@@ -72,9 +73,9 @@ def run_margin_effects(dataset: np.ndarray, offsets: List[int], samp_factor=None
         ctx.use_fancy_sampling = use_fancy_sampling
         
         margin_result = decompression.run_test(data, ctx)
-        print(margin_result, offset)
-        #output.add_print_grouped_clusters(margin_result.spatial, offset)
-    #output.end_print_grouped_clusters()
+        #print(margin_result, offset)
+        output.add_print_grouped_clusters(margin_result.spatial, offset)
+    output.end_print_grouped_clusters()
 
 
 def run_margin_with_sampling(dataset: np.ndarray, offsets: List[int], mod=8):
@@ -84,7 +85,6 @@ def run_margin_with_sampling(dataset: np.ndarray, offsets: List[int], mod=8):
 
 
 def run_python_implementation(dataset: np.ndarray):
-    output.print_intro(dataset)
     ctx = TestContext()
     ctx.versions = implementations
     if dataset.shape[3] == 3:
@@ -140,13 +140,13 @@ def run_decompression_tests(dataset: np.ndarray):
     if data_is_color:
         run_dct_with_sampling(dataset)
 
-    print("--- Quality ---")
+    print("--- QUALITY ---")
     run_quality(dataset)
     if data_is_color:
-        print("--- Sampling factor ---")
+        print("--- SAMPLING FACTOR ---")
         run_sampling_factor(dataset)
 
-    print("--- Margin effects ---")
+    print("--- MARGIN EFFECTS ---")
     print("4:4:4 no downsampling")
     run_margin_effects(dataset, [0, 1, 2, 4, 7, 8],
                        ((1, 1), (1, 1), (1, 1)))
@@ -156,22 +156,20 @@ def run_decompression_tests(dataset: np.ndarray):
     print('------- PYTHON IMPLEMENTATIONS ----------')
     run_python_implementation(dataset)
 
-    run_PSNR_dct(alaska, 'JDCT_ISLOW', 'JDCT_IFAST')
-    run_PSNR_dct(alaska, 'JDCT_ISLOW', 'JDCT_FLOAT')
+    # decompression PSNR
+    print("--- PSNR ---")
+    run_PSNR_dct(dataset, 'JDCT_ISLOW', 'JDCT_IFAST')
+    run_PSNR_dct(dataset, 'JDCT_ISLOW', 'JDCT_FLOAT')
 
-    print('------- GRAYSCALE ----------')
-    run_PSNR_dct(boss, 'JDCT_ISLOW', 'JDCT_IFAST')
-    run_PSNR_dct(boss, 'JDCT_ISLOW', 'JDCT_FLOAT')
+    print('--------- PSNR: VERSIONS----------')
+    run_PSNR_version(dataset, 'turbo', '9')
+    run_PSNR_version(dataset, '7', '9a')
+    run_PSNR_version(dataset, '6b', '9a')
 
-    print('---------VERSIONS----------')
-    run_PSNR_version(alaska, 'turbo', '9')
-    run_PSNR_version(alaska, '7', '9a')
-    run_PSNR_version(alaska, '6b', '9a')
-
-    print('------- QUALITY ----------')
-    run_PSNR_qf(alaska, 75, 90)
-    run_PSNR_qf(alaska, 90, 95)
-    run_PSNR_qf(alaska, 95, 100)
+    print('------- PSNR: QUALITY ----------')
+    run_PSNR_qf(dataset, 75, 90)
+    run_PSNR_qf(dataset, 90, 95)
+    run_PSNR_qf(dataset, 95, 100)
 
 
 # direct execution

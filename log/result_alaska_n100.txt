@@ -1,0 +1,32 @@
+Loaded 80005 images from /Users/martin/Datasets/ALASKA_v2_TIFF_256_COLOR
+
+=== Compression tests ===
+
+--- Data ---
+Data:
+| Data size: 107
+| Image size: (256, 256)
+| Channels: 3
+
+is turbo faster in decompression than 6b: p-value 6.90475327358954e-54
+
+--- baseline ---
+| Y (('6b', 'turbo210', '7', '8', '8a', '8b', '8c', '8d', '9', '9a', '9b', '9c', '9d', '9e'),)
+| C* (('6b', 'turbo210'), ('7', '8', '8a', '8b', '8c', '8d', '9', '9a', '9b', '9c', '9d'), ('9e',))
+
+
+--- DCT methods ---
+4:4:4 no downsampling
+Method: JDCT_ISLOW
+| Y (('6b', 'turbo210', '7', '8', '8a', '8b', '8c', '8d', '9', '9a', '9b', '9c', '9d', '9e'),)
+| C* (('6b', 'turbo210', '7', '8', '8a', '8b', '8c', '8d', '9', '9a', '9b', '9c', '9d'), ('9e',))
+Method: JDCT_FLOAT
+| Y (('6b', 'turbo210', '7', '8', '8a', '8b', '8c', '8d', '9', '9a', '9b', '9c', '9d', '9e'),)
+| C* (('6b', 'turbo210', '7', '8', '8a', '8b', '8c', '8d', '9', '9a', '9b', '9c', '9d'), ('9e',))
+Method: JDCT_IFAST
+| Y (('6b', 'turbo210', '7', '8', '8a', '8b', '8c', '8d', '9', '9a', '9b', '9c', '9d', '9e'),)
+| C* (('6b', 'turbo210', '7', '8', '8a', '8b', '8c', '8d', '9', '9a', '9b', '9c', '9d'), ('9e',))
+4:2:0 fancy downsampling
+Method: JDCT_ISLOW
+| Y (('6b', 'turbo210', '7', '8', '8a', '8b', '8c', '8d', '9', '9a', '9b', '9c', '9d', '9e'),)
+| C* (('6b', 'turbo210'), ('7', '8', '8a', '8b', '8c', '8d', '9', '9a', '9b', '9c', '9d'), ('9e',))
