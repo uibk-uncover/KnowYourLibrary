@@ -24,4 +24,4 @@ Method: JDCT_IFAST
 | Y (('6b', 'turbo210', '7', '8', '8a', '8b', '8c', '8d', '9', '9a', '9b', '9c', '9d', '9e'),)
 
 --- Quality ---
-| (('6b', 'turbo210', '7', '8', '8a', '8b', '8c', '8d', '9', '9a', '9b', '9c', '9d', '9e'),) : 25:Y 25:spatial 26:Y 26:spatial 27:Y 27:spatial 28:Y 28:spatial 29:Y 29:spatial 30:Y 30:spatial 31:Y 31:spatial 32:Y 32:spatial 33:Y 33:spatial 34:Y 34:spatial 35:Y 35:spatial 36:Y 36:spatial 37:Y 37:spatial 38:Y 38:spatial 39:Y 39:spatial 40:Y 40:spatial 41:Y 41:spatial
+| (('6b', 'turbo210', '7', '8', '8a', '8b', '8c', '8d', '9', '9a', '9b', '9c', '9d', '9e'),) : 25:Y 25:spatial 26:Y 26:spatial 27:Y 27:spatial 28:Y 28:spatial 29:Y 29:spatial 30:Y 30:spatial 31:Y 31:spatial 32:Y 32:spatial 33:Y 33:spatial 34:Y 34:spatial 35:Y 35:spatial 36:Y 36:spatial 37:Y 37:spatial 38:Y 38:spatial 39:Y 39:spatial 40:Y 40:spatial 41:Y 41:spatial 42:Y 42:spatial 43:Y 43:spatial 44:Y 44:spatial 45:Y 45:spatial 46:Y 46:spatial 47:Y 47:spatial 48:Y 48:spatial 49:Y 49:spatial 50:Y 50:spatial 51:Y 51:spatial 52:Y 52:spatial 53:Y 53:spatial 54:Y 54:spatial 55:Y 55:spatial 56:Y 56:spatial
