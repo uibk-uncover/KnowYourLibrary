@@ -69,8 +69,7 @@ class plt_IO(ImageIO):
     """i/o implementation using matplotlib"""
 
     def compress_rgb(self, x): plt.imsave(self.name, x)
-    def compress_grayscale(self, x): plt.imsave(
-        self.name, x[:, :, 0], cmap='gray')
+    def compress_grayscale(self, x): plt.imsave(self.name, x[:, :, 0], cmap='gray')
 
     def decompress_rgb(self):
         x = plt.imread(self.name)

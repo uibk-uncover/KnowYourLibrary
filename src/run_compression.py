@@ -111,11 +111,12 @@ def run_compression_tests(dataset: np.ndarray):
     # Python implementations
     print("--- Python implementations ---")
     ctx = TestContext()
-    ctx.versions = implementations
+    ctx.versions = implementations.copy()
     if dataset.shape[3] == 3:
         ctx.compressor = implementation.io_compressor_rgb
     else:
         ctx.compressor = implementation.io_compressor_grayscale
+        del ctx.versions['plt'] # problems with plt compression grayscale
     res = compression.run_test(dataset, ctx)
     compression.print_clusters(res)
     print(end="\n\n")

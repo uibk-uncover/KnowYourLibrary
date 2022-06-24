@@ -93,7 +93,7 @@ class TestContext:
 
 def compress_image(x: np.ndarray, path: str, ctx: TestContext):
     # to jpeglib
-    im = jpeglib.from_spatial(x)
+    im = jpeglib.from_spatial(np.ascontiguousarray(x))
     # samp factor
     if ctx.samp_factor is not None:
         im.samp_factor = ctx.samp_factor

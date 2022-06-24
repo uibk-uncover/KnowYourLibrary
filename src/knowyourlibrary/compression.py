@@ -58,6 +58,7 @@ def run_test(dataset: np.ndarray, ctx: TestContext):
             ]
             images['version'].append(v_compress)
             images['spatial'].append(np.array([x.spatial for x in spatial]))
+            print(v_compress, spatial[0].spatial.shape)
             images['Y'].append(np.array([x.Y for x in dct]))
             if channels == 3:
                 images['Cb'].append(np.array([x.Cb for x in dct]))

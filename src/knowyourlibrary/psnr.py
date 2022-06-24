@@ -25,26 +25,33 @@ def get_quantile_decomp(psnr):
     psnr = np.array(psnr)
     psnr = psnr[~np.isinf(psnr)]
     median = np.median(psnr)
-    q5 = np.quantile(psnr, .05)
-    q95 = np.quantile(psnr, .95)
+    try: q5 = np.quantile(psnr, .05)
+    except IndexError: q5 = np.inf
+    try: q95 = np.quantile(psnr, .95)
+    except IndexError: q95 = np.inf
     return median, q5, q95
 
 def DCT_match_nz(dct1, dct2):
     (Y1, Cb1, Cr1), (Y2, Cb2, Cr2) = dct1, dct2
     dY = (Y1[Y1 != 0] == Y2[Y1 != 0]).sum()
-    dCb = (Cb1[Cb1 != 0] == Cb2[Cb1 != 0]).sum()
-    dCr = (Cr1[Cr1 != 0] == Cr2[Cr1 != 0]).sum()
-    # % of matched DCT coefficients (Y + CbCr)
-    return (dY + dCb + dCr) / ((Y1 != 0).sum() + (Cb1 != 0).sum() + (Cr1 != 0).sum())
-
+    if Cb1 and Cb2 and Cr1 and Cr2: # chrominance given
+        dCb = (Cb1[Cb1 != 0] == Cb2[Cb1 != 0]).sum()
+        dCr = (Cr1[Cr1 != 0] == Cr2[Cr1 != 0]).sum()
+        # % of matched DCT coefficients (Y + CbCr)
+        return (dY + dCb + dCr) / ((Y1 != 0).sum() + (Cb1 != 0).sum() + (Cr1 != 0).sum())
+    else: # only luminance
+        return (dY) / ((Y1 != 0).sum())
 
 def DCT_mismatch_log10(dct1, dct2):
     (Y1, Cb1, Cr1), (Y2, Cb2, Cr2) = dct1, dct2
     dY = (Y1 != Y2).sum()
-    dCb = (Cb1 != Cb2).sum()
-    dCr = (Cr1 != Cr2).sum()
-    # % of matched DCT coefficients (Y + CbCr)
-    match_pct = (dY + dCb + dCr) / (Y1.size + Cb1.size + Cr1.size)
+    if Cb1 and Cb2 and Cr1 and Cr2: # chrominance given
+        dCb = (Cb1 != Cb2).sum()
+        dCr = (Cr1 != Cr2).sum()
+        # % of matched DCT coefficients (Y + CbCr)
+        match_pct = (dY + dCb + dCr) / (Y1.size + Cb1.size + Cr1.size)
+    else:
+        match_pct = (dY) / (Y1.size)
     return np.log10(match_pct)
 
 
@@ -125,28 +132,30 @@ def run_compression_versions_test(dataset: np.ndarray, ctx: TestContext):
                     compress_image_read_jpeg(dataset[i], ctx)
                     for i in range(N)
                 ]
-            # compute nz match
-            for i in range(N):
-                matches['version'].append(v1)
-                matches['descriptor'].append(v2)
-                matches['nz'].append(
-                    DCT_match_nz(
-                        (jpeg1[i].Y, jpeg1[i].Cb, jpeg1[i].Cr),
-                        (jpeg2[i].Y, jpeg2[i].Cb, jpeg2[i].Cr),
+                # compute nz match
+                for i in range(N):
+                    matches['version'].append(v1)
+                    matches['descriptor'].append(v2)
+                    matches['nz'].append(
+                        DCT_match_nz(
+                            (jpeg1[i].Y, jpeg1[i].Cb, jpeg1[i].Cr),
+                            (jpeg2[i].Y, jpeg2[i].Cb, jpeg2[i].Cr),
+                        )
                     )
-                )
-                matches['log'].append(
-                    DCT_mismatch_log10(
-                        (jpeg1[i].Y, jpeg1[i].Cb, jpeg1[i].Cr),
-                        (jpeg2[i].Y, jpeg2[i].Cb, jpeg2[i].Cr),
+                    matches['log'].append(
+                        DCT_mismatch_log10(
+                            (jpeg1[i].Y, jpeg1[i].Cb, jpeg1[i].Cr),
+                            (jpeg2[i].Y, jpeg2[i].Cb, jpeg2[i].Cr),
+                        )
                     )
-                )
     return pd.DataFrame(matches)
 
 
 def TeXize_compression(res: pd.DataFrame):
     def quantile(n):
         def quantile_(x):
+            if x[np.isfinite(x)].empty:
+                return -np.inf
             return np.quantile(x[np.isfinite(x)],n)
         q = '%4.2f' % n
         quantile_.__name__ = f'q{q[2:]}'
@@ -159,7 +168,8 @@ def TeXize_compression(res: pd.DataFrame):
         .groupby(['version', 'descriptor'])
         .agg({
             'nz': [match],
-            'log': [quantile(.05), quantile(.5), quantile(.95)]})
+            'log': [quantile(.05), quantile(.5), quantile(.95)]
+        })
         .reset_index(drop=False)
     )
     # flatten multilevel columns
