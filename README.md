@@ -92,17 +92,26 @@ There are example images in this repository. Execute tests on them only with
 python run.py all -i "alaska=./data/alaska;boss=./data/boss" -n 15
 ```
 
+## Results
 
+You can find examples of results for compression and decompression in `results/` directory.
+Both contain `baseline_color` and `baseline_grayscale` directories with image files
+in naming format `<filename>_<version>.[png|jpeg]`.
+
+For example, `data/alaska/00001.tif` has been compressed with libjpeg 8 to `results/compression/baseline_color/00001_8.jpeg`.
+The same tif file was compressed with libjpeg 9e and decompressed with libjpeg 9b to `results/decompression/baseline_color/00001_9b.png`. All the images from `results/` directory were created by `results/create_baseline.py`.
+
+In the `results/`, you can find hashes of result examples in `results/*.sha256`. These were created by `results/create_hash.sh`.
 
 ## Repository structure
 
 The following files and directories contain the experiments.
 
-- `run.py` = entrypoint for executing
-- `run_compression.py` = structure of compression tests
-- `run_decompression.py` = structure of decompression tests
 - `src/` = Python implementation
+- `src/run.py` = entrypoint for executing
 - `data/*.sha256` = SHA256 hashes of the files
+- `log/` = example of logs, printed by `src/run.py` on stdout
+- `results/` = examples of baseline compression and decompression
 
 The following files are intended to facilitate the repuducibility.
 

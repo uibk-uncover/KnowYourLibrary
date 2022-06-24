@@ -131,20 +131,20 @@ def run_decompression_tests(dataset: np.ndarray):
     print("=== Decompression tests ===")
     output.print_intro(dataset)
 
-    print("--- baseline ---")
-    run_baseline(dataset)
+    # print("--- baseline ---")
+    # run_baseline(dataset)
 
-    print("--- DCT methods ---")
-    print("4:4:4 no upsampling")
-    run_dct(dataset, ((1, 1), (1, 1), (1, 1)))
-    if data_is_color:
-        run_dct_with_sampling(dataset)
+    # print("--- DCT methods ---")
+    # print("4:4:4 no upsampling")
+    # run_dct(dataset, ((1, 1), (1, 1), (1, 1)))
+    # if data_is_color:
+    #     run_dct_with_sampling(dataset)
 
-    print("--- QUALITY ---")
-    run_quality(dataset)
-    if data_is_color:
-        print("--- SAMPLING FACTOR ---")
-        run_sampling_factor(dataset)
+    # print("--- QUALITY ---")
+    # run_quality(dataset)
+    # if data_is_color:
+    #     print("--- SAMPLING FACTOR ---")
+    #     run_sampling_factor(dataset)
 
     print("--- MARGIN EFFECTS ---")
     print("4:4:4 no downsampling")

@@ -69,4 +69,57 @@ Method: JDCT_FLOAT
 Method: JDCT_IFAST
 | spatial (('6b', 'turbo210', '7', '8', '8a', '8b', '8c', '8d', '9', '9a'), ('9b', '9c', '9d', '9e'))
 --- QUALITY ---
-| (('6b', 'turbo210', '7', '8', '8a', '8b', '8c', '8d', '9', '9a', '9b', '9c', '9d', '9e'),) : 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49
+| (('6b', 'turbo210', '7', '8', '8a', '8b', '8c', '8d', '9', '9a', '9b', '9c', '9d', '9e'),) : 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100
+
+--- MARGIN EFFECTS ---
+4:4:4 no downsampling
+| (('6b', 'turbo210', '7', '8', '8a', '8b', '8c', '8d', '9', '9a', '9b', '9c', '9d', '9e'),) : (0, 0) (0, 1) (0, 2) (0, 4) (0, 7) (0, 0) (1, 0) (1, 1) (1, 2) (1, 4) (1, 7) (1, 0) (2, 0) (2, 1) (2, 2) (2, 4) (2, 7) (2, 0) (4, 0) (4, 1) (4, 2) (4, 4) (4, 7) (4, 0) (7, 0) (7, 1) (7, 2) (7, 4) (7, 7) (7, 0) (0, 0) (0, 1) (0, 2) (0, 4) (0, 7) (0, 0)
+------- PYTHON IMPLEMENTATIONS ----------
+| spatial (('PIL', 'cv2', 'plt', '6b', '8d', '9d', '9e', 'turbo'),)
+
+--- PSNR ---
+DCT:  JDCT_ISLOW  vs.  JDCT_IFAST
+False
+104 / 107 mismatching images
+ q5:  51.255324702401296 median:  51.30089730097998  q95:  52.43924058938732
+& $104$ & $51.26$ & $51.3$ & $52.44$ \
+DCT:  JDCT_ISLOW  vs.  JDCT_FLOAT
+False
+104 / 107 mismatching images
+ q5:  57.16265132932392 median:  58.22778603480164  q95:  69.40619113800176
+& $104$ & $57.16$ & $58.23$ & $69.41$ \
+--------- PSNR: VERSIONS----------
+version:  turbo  vs.  9
+False
+0 / 107 mismatching images
+ q5:  inf median:  nan  q95:  inf
+& $0$ & $inf$ & $nan$ & $inf$ \
+version:  7  vs.  9a
+False
+0 / 107 mismatching images
+ q5:  inf median:  nan  q95:  inf
+& $0$ & $inf$ & $nan$ & $inf$ \
+version:  6b  vs.  9a
+False
+0 / 107 mismatching images
+ q5:  inf median:  nan  q95:  inf
+& $0$ & $inf$ & $nan$ & $inf$ \
+------- PSNR: QUALITY ----------
+qf1 vs qf2 :  75 90
+quality:  75  vs.  90
+True
+104 / 107 mismatching images
+ q5:  37.543527380006495 median:  43.11213886448055  q95:  46.416518536058675
+& $104$ & $37.54$ & $43.11$ & $46.42$ \
+qf1 vs qf2 :  90 95
+quality:  90  vs.  95
+True
+104 / 107 mismatching images
+ q5:  39.382776185055285 median:  44.50105131835091  q95:  47.676864237269896
+& $104$ & $39.38$ & $44.5$ & $47.68$ \
+qf1 vs qf2 :  95 100
+quality:  95  vs.  100
+True
+104 / 107 mismatching images
+ q5:  43.661908945324804 median:  46.1483536374792  q95:  48.60994271133892
+& $104$ & $43.66$ & $46.15$ & $48.61$ \

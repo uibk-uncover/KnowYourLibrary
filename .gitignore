@@ -2,5 +2,3 @@ venv
 __pycache__
 PoC/lena_*.jpeg
 .DS_Store
-
-results/*.py
