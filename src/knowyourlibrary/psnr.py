@@ -1,4 +1,3 @@
-
 import pandas as pd
 import tempfile
 from ._defs import *
@@ -6,14 +5,13 @@ from ._defs import *
 
 def PSNR(x_ref, x_noisy):
     """PSNR of two signals."""
-    D = x_ref.astype(np.float32) - \
-        x_noisy.astype(np.float32)
+    D = x_ref.astype(np.float32) - x_noisy.astype(np.float32)
 
     mse = (D**2).mean()
-    if(mse == 0):
+    if mse == 0:
         return np.inf
     maxi = 255  # x_ref.max().astype(np.float64)
-    return np.log10(maxi**2/mse)*10
+    return np.log10(maxi**2 / mse) * 10
 
 
 def get_mismatching_images_decomp(psnr):
@@ -25,27 +23,35 @@ def get_quantile_decomp(psnr):
     psnr = np.array(psnr)
     psnr = psnr[~np.isinf(psnr)]
     median = np.median(psnr)
-    try: q5 = np.quantile(psnr, .05)
-    except IndexError: q5 = np.inf
-    try: q95 = np.quantile(psnr, .95)
-    except IndexError: q95 = np.inf
+    try:
+        q5 = np.quantile(psnr, 0.05)
+    except IndexError:
+        q5 = np.inf
+    try:
+        q95 = np.quantile(psnr, 0.95)
+    except IndexError:
+        q95 = np.inf
     return median, q5, q95
+
 
 def DCT_match_nz(dct1, dct2):
     (Y1, Cb1, Cr1), (Y2, Cb2, Cr2) = dct1, dct2
     dY = (Y1[Y1 != 0] == Y2[Y1 != 0]).sum()
-    if Cb1 and Cb2 and Cr1 and Cr2: # chrominance given
+    if Cb1 and Cb2 and Cr1 and Cr2:  # chrominance given
         dCb = (Cb1[Cb1 != 0] == Cb2[Cb1 != 0]).sum()
         dCr = (Cr1[Cr1 != 0] == Cr2[Cr1 != 0]).sum()
         # % of matched DCT coefficients (Y + CbCr)
-        return (dY + dCb + dCr) / ((Y1 != 0).sum() + (Cb1 != 0).sum() + (Cr1 != 0).sum())
-    else: # only luminance
+        return (dY + dCb + dCr) / (
+            (Y1 != 0).sum() + (Cb1 != 0).sum() + (Cr1 != 0).sum()
+        )
+    else:  # only luminance
         return (dY) / ((Y1 != 0).sum())
+
 
 def DCT_mismatch_log10(dct1, dct2):
     (Y1, Cb1, Cr1), (Y2, Cb2, Cr2) = dct1, dct2
     dY = (Y1 != Y2).sum()
-    if Cb1 and Cb2 and Cr1 and Cr2: # chrominance given
+    if Cb1 and Cb2 and Cr1 and Cr2:  # chrominance given
         dCb = (Cb1 != Cb2).sum()
         dCr = (Cr1 != Cr2).sum()
         # % of matched DCT coefficients (Y + CbCr)
@@ -61,12 +67,13 @@ def get_missing(match):
 
 
 def get_mismatching(match):
-    return (~np.isinf(match))
+    return ~np.isinf(match)
 
 
 def get_q05_q5_q95(match):
     """Get quantiles 5%, 50%, 95%."""
-    return np.quantile(match, [.05, .5, .95])
+    return np.quantile(match, [0.05, 0.5, 0.95])
+
 
 # def print_evaluation_comp_version(**comp):
 #     print(comp["v1"], " vs. ", comp["v2"])
@@ -117,32 +124,26 @@ def run_compression_versions_test(dataset: np.ndarray, ctx: TestContext):
     tmp = tempfile.TemporaryDirectory()
 
     # iterate versions
-    matches = {'version': [], 'descriptor': [], 'nz': [], 'log': []}
+    matches = {"version": [], "descriptor": [], "nz": [], "log": []}
     for i1, v1 in enumerate(ctx.versions):
-        for v2 in ctx.versions[i1+1:]:
+        for v2 in ctx.versions[i1 + 1 :]:
             # compress with v1
             with jpeglib.version(v1):
-                jpeg1 = [
-                    compress_image_read_jpeg(dataset[i], ctx)
-                    for i in range(N)
-                ]
+                jpeg1 = [compress_image_read_jpeg(dataset[i], ctx) for i in range(N)]
             # compress with v2
             with jpeglib.version(v2):
-                jpeg2 = [
-                    compress_image_read_jpeg(dataset[i], ctx)
-                    for i in range(N)
-                ]
+                jpeg2 = [compress_image_read_jpeg(dataset[i], ctx) for i in range(N)]
                 # compute nz match
                 for i in range(N):
-                    matches['version'].append(v1)
-                    matches['descriptor'].append(v2)
-                    matches['nz'].append(
+                    matches["version"].append(v1)
+                    matches["descriptor"].append(v2)
+                    matches["nz"].append(
                         DCT_match_nz(
                             (jpeg1[i].Y, jpeg1[i].Cb, jpeg1[i].Cr),
                             (jpeg2[i].Y, jpeg2[i].Cb, jpeg2[i].Cr),
                         )
                     )
-                    matches['log'].append(
+                    matches["log"].append(
                         DCT_mismatch_log10(
                             (jpeg1[i].Y, jpeg1[i].Cb, jpeg1[i].Cr),
                             (jpeg2[i].Y, jpeg2[i].Cb, jpeg2[i].Cr),
@@ -156,37 +157,37 @@ def TeXize_compression(res: pd.DataFrame):
         def quantile_(x):
             if x[np.isfinite(x)].empty:
                 return -np.inf
-            return np.quantile(x[np.isfinite(x)],n)
-        q = '%4.2f' % n
-        quantile_.__name__ = f'q{q[2:]}'
+            return np.quantile(x[np.isfinite(x)], n)
+
+        q = "%4.2f" % n
+        quantile_.__name__ = f"q{q[2:]}"
         return quantile_
+
     def match(x):
         return int((x < 1).sum())
+
     # aggregate quantiles
     res = (
-        res
-        .groupby(['version', 'descriptor'])
-        .agg({
-            'nz': [match],
-            'log': [quantile(.05), quantile(.5), quantile(.95)]
-        })
+        res.groupby(["version", "descriptor"])
+        .agg({"nz": [match], "log": [quantile(0.05), quantile(0.5), quantile(0.95)]})
         .reset_index(drop=False)
     )
     # flatten multilevel columns
-    res.columns = ['.'.join([c for c in col if c != '']) for col in res.columns]
+    res.columns = [".".join([c for c in col if c != ""]) for col in res.columns]
     # format versions
-    res['versions'] = res.apply(lambda r: f'{r.version} vs {r.descriptor}', axis=1)
+    res["versions"] = res.apply(lambda r: f"{r.version} vs {r.descriptor}", axis=1)
     # format latex table
     formatters = {
-        'versions': lambda i: i.replace('6b','6b/turbo').replace('7','7--9d'),
-        'nz.match': lambda i: '$%d$' % i,
-        'log.q05': lambda i: '$%3.2f$' % i,
-        'log.q50': lambda i: '$%3.2f$' % i,
-        'log.q95': lambda i: '$%3.2f$' % i,
+        "versions": lambda i: i.replace("6b", "6b/turbo").replace("7", "7--9d"),
+        "nz.match": lambda i: "$%d$" % i,
+        "log.q05": lambda i: "$%3.2f$" % i,
+        "log.q50": lambda i: "$%3.2f$" % i,
+        "log.q95": lambda i: "$%3.2f$" % i,
     }
     print(
-        res[['versions','nz.match','log.q05','log.q50','log.q95']]
-        .to_latex(header=False, index=False, formatters=formatters, escape=False)
+        res[["versions", "nz.match", "log.q05", "log.q50", "log.q95"]].to_latex(
+            header=False, index=False, formatters=formatters, escape=False
+        )
     )
 
 
@@ -212,14 +213,21 @@ def TeXize_compression(res: pd.DataFrame):
 #         print(f"& ${get_mismatching_img_comp(match).sum()}$ & ${round(q5, 2)}$ & ${round(median, 2)}$& ${round(q95, 2)}$ \\")
 
 
-def return_PSNR(dataset: np.ndarray, ctx_arb: TestContext,  ctx_1: TestContext, ctx_2: TestContext, is_quality=False, is_dct=False):
+def return_PSNR(
+    dataset: np.ndarray,
+    ctx_arb: TestContext,
+    ctx_1: TestContext,
+    ctx_2: TestContext,
+    is_quality=False,
+    is_dct=False,
+):
     print(is_quality)
     tmp = tempfile.NamedTemporaryFile()  # create temporary file
     psnr = []
     for i in range(dataset.shape[0]):
         # compress with arbitrary
         with jpeglib.version(ctx_arb.v_arbitrary):
-            if(is_quality):
+            if is_quality:
                 compress_image(dataset[i], tmp.name, ctx_1)
                 x_v1 = decompress_image(tmp.name, ctx_1)
                 x_v1_spatial = x_v1.spatial  # why do I need to do that?
@@ -234,12 +242,12 @@ def return_PSNR(dataset: np.ndarray, ctx_arb: TestContext,  ctx_1: TestContext, 
                 # decompress with each version
                 with jpeglib.version(ctx_1.v_arbitrary):
                     x_v1 = decompress_image(tmp.name, ctx_1)
-                    if(not is_dct):
+                    if not is_dct:
                         x_v1_spatial = x_v1.spatial  # why do I need to do that?
 
                 with jpeglib.version(ctx_2.v_arbitrary):
                     x_v2 = decompress_image(tmp.name, ctx_2)
-                    if(not is_dct):
+                    if not is_dct:
                         x_v2_spatial = x_v2.spatial  # why do I need to do that?
 
         # compute psnr
@@ -247,28 +255,61 @@ def return_PSNR(dataset: np.ndarray, ctx_arb: TestContext,  ctx_1: TestContext, 
     return psnr
 
 
-def print_PSNR(dataset: np.ndarray, ctx_arb: TestContext, ctx_1: TestContext, ctx_2: TestContext, PSNR_test: str):
+def print_PSNR(
+    dataset: np.ndarray,
+    ctx_arb: TestContext,
+    ctx_1: TestContext,
+    ctx_2: TestContext,
+    PSNR_test: str,
+):
+    f = open("results/results.txt", "a")
+
     is_quality = False
     is_dct = False
-    if(PSNR_test == 'version'):
-        print("version: ", ctx_1.v_arbitrary,
-              " vs. ", ctx_2.v_arbitrary)
+    if PSNR_test == "version":
+        print(
+            "version: ",
+            ctx_1.v_arbitrary,
+            " vs. ",
+            ctx_2.v_arbitrary,
+        )
 
-    if(PSNR_test == 'DCT'):
-        print("DCT: ", ctx_1.dct_method_decompression,
-              " vs. ", ctx_2.dct_method_decompression)
+    if PSNR_test == "DCT":
+        print(
+            "DCT: ",
+            ctx_1.dct_method_decompression,
+            " vs. ",
+            ctx_2.dct_method_decompression,
+        )
         is_dct = True
 
-    if(PSNR_test == 'qf'):
-        print("quality: ", ctx_1.quality,
-              " vs. ", ctx_2.quality)
+    if PSNR_test == "qf":
+        print(
+            "quality: ",
+            ctx_1.quality,
+            " vs. ",
+            ctx_2.quality,
+        )
         is_quality = True
 
     psnr = return_PSNR(dataset, ctx_arb, ctx_1, ctx_2, is_quality, is_dct)
 
-    print(get_mismatching_images_decomp(psnr), "/",
-          dataset.shape[0], "mismatching images")
+    print(
+        get_mismatching_images_decomp(psnr),
+        "/",
+        dataset.shape[0],
+        "mismatching images",
+    )
     if psnr:
         median, q5, q95 = get_quantile_decomp(psnr)
-    print(" q5: ", q5, "median: ", median, " q95: ", q95)
-    print(f"& ${get_mismatching_images_decomp(psnr)}$ & ${round(q5, 2)}$ & ${round(median, 2)}$ & ${round(q95, 2)}$ \\")
+    print(
+        " q5: ",
+        q5,
+        "median: ",
+        median,
+        " q95: ",
+        q95,
+    )
+    print(
+        f"& ${get_mismatching_images_decomp(psnr)}$ & ${round(q5, 2)}$ & ${round(median, 2)}$ & ${round(q95, 2)}$ \\",
+    )

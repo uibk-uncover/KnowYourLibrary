@@ -1,0 +1,35 @@
+Loaded 80005 images from /home/nora/data/ALASKA_v2_TIFF_512_COLOR
+
+
+Data:
+| Data size: 17
+| Image size: (512, 512)
+| Channels: 3
+
+| spatial (('6b', 'turbo120', 'turbo150', 'turbo200', 'turbo210'),)
+| spatial (('6b', 'turbo120', 'turbo150', 'turbo200', 'turbo210'),)
+| spatial (('6b', 'turbo120'), ('turbo150', 'turbo200', 'turbo210'))
+=== Decompression tests ===
+--- baseline ---
+--- DCT methods ---
+4:4:4 no upsampling
+Method: JDCT_ISLOW
+Method: JDCT_FLOAT
+Method: JDCT_IFAST
+Loaded 80005 images from /home/nora/data/ALASKA_v2_TIFF_512_COLOR
+
+
+Data:
+| Data size: 17
+| Image size: (512, 512)
+| Channels: 3
+
+| spatial (('6b', 'turbo120', 'turbo150', 'turbo200', 'turbo210'),)
+=== Decompression tests ===
+--- baseline ---
+--- DCT methods ---
+4:4:4 no upsampling
+Method: JDCT_ISLOW
+Loaded 80005 images from /home/nora/data/ALASKA_v2_TIFF_512_COLOR
+
+

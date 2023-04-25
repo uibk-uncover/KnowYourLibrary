@@ -1,5 +1,7 @@
-
 from pathlib import Path
+import jpeglib
+import logging
+
 
 from knowyourlibrary import psnr
 from knowyourlibrary import implementation, psnr
@@ -22,36 +24,47 @@ def run_dct(dataset: np.ndarray, samp_factor: Tuple[int], use_fancy_sampling=Non
     ctx.samp_factor = samp_factor
     ctx.use_fancy_sampling = use_fancy_sampling
 
-    for dct_method in ['JDCT_ISLOW', 'JDCT_FLOAT', 'JDCT_IFAST']:
+    for dct_method in [jpeglib.JDCT_ISLOW, jpeglib.JDCT_FLOAT, jpeglib.JDCT_IFAST]:
         ctx.dct_method_decompression = dct_method
         print("Method:", ctx.dct_method_decompression)
+        logging.info(f"Method: {ctx.dct_method_decompression}")
         dct_result = decompression.run_test(dataset, ctx)
         output.print_clusters(dct_result)
 
 
 def run_dct_with_sampling(dataset: np.ndarray):
-    for use_fancy_sampling, method in zip([True, False], ['fancy upsampling', 'simple scaling']):
-        print(f"4:2:0 {method}")
-        run_dct(dataset,
-                ((2, 2), (1, 1), (1, 1)), use_fancy_sampling)
+    for use_fancy_sampling, method in zip(
+        [True, False], ["fancy upsampling", "simple scaling"]
+    ):
+        print(
+            f"4:2:0 {method}",
+        )
+        logging.info(f"4:2:0 {method}")
+
+        run_dct(dataset, ((2, 2), (1, 1), (1, 1)), use_fancy_sampling)
 
 
 def run_quality(dataset: np.ndarray):
     ctx = TestContext()
 
-    for quality in range(25, 101):
+    for quality in range(75, 101):
         ctx.quality = quality
         quality_result = decompression.run_test(dataset, ctx)
         output.add_print_grouped_clusters(quality_result.spatial, quality)
     output.end_print_grouped_clusters()
-    print()
+    print("\n")
+    logging.info(f"\n")
 
 
 def run_sampling_factor(dataset: np.ndarray):
     ctx = TestContext()
 
-    for use_fancy_sampling, method in zip([True, False], ['Fancy upsampling', 'Simple scaling']):
+    for use_fancy_sampling, method in zip(
+        [True, False], ["Fancy upsampling", "Simple scaling"]
+    ):
         print(method)
+        logging.info(f"{method}")
+
         ctx.use_fancy_sampling = use_fancy_sampling
 
         for samp_factor in samp_factors:
@@ -60,28 +73,40 @@ def run_sampling_factor(dataset: np.ndarray):
             sampling_factor_result = decompression.run_test(dataset, ctx)
 
             output.add_print_grouped_clusters(
-                sampling_factor_result.spatial, samp_factor)
+                sampling_factor_result.spatial, samp_factor
+            )
         output.end_print_grouped_clusters()
 
 
-def run_margin_effects(dataset: np.ndarray, offsets: List[int], samp_factor=None, use_fancy_sampling=None, mod=8):
+def run_margin_effects(
+    dataset: np.ndarray,
+    offsets: List[int],
+    samp_factor=None,
+    use_fancy_sampling=None,
+    mod=8,
+):
     for data in generate_cropped_datasets(dataset, offsets):
         offset = (data.shape[1] % mod, data.shape[2] % mod)
-        
+
         ctx = TestContext()
         ctx.samp_factor = samp_factor
         ctx.use_fancy_sampling = use_fancy_sampling
-        
+
         margin_result = decompression.run_test(data, ctx)
-        #print(margin_result, offset)
+        # print(margin_result, offset)
         output.add_print_grouped_clusters(margin_result.spatial, offset)
     output.end_print_grouped_clusters()
 
 
 def run_margin_with_sampling(dataset: np.ndarray, offsets: List[int], mod=8):
-    for use_fancy_sampling, method in zip([True, False], ['fancy upsampling', 'simple scaling']):
+    for use_fancy_sampling, method in zip(
+        [True, False], ["fancy upsampling", "simple scaling"]
+    ):
         print(f"4:2:0 {method}")
-        run_margin_effects(dataset, offsets, ((2,2),(1,1),(1,1)), use_fancy_sampling, mod)
+        logging.info(f"4:2:0 {method}")
+        run_margin_effects(
+            dataset, offsets, ((2, 2), (1, 1), (1, 1)), use_fancy_sampling, mod
+        )
 
 
 def run_python_implementation(dataset: np.ndarray):
@@ -93,7 +118,8 @@ def run_python_implementation(dataset: np.ndarray):
         ctx.decompressor = implementation.io_decompressor_grayscale
     implementation_results = decompression.run_test(dataset, ctx)
     output.print_clusters(implementation_results)
-    print()
+    print("\n")
+    logging.info(f"\n")
 
 
 def run_PSNR_dct(dataset: np.ndarray, dct_method_v1: str, dct_method_v2: str):
@@ -102,7 +128,7 @@ def run_PSNR_dct(dataset: np.ndarray, dct_method_v1: str, dct_method_v2: str):
     ctx_2 = TestContext()
     ctx_2.dct_method_decompression = dct_method_v2
 
-    psnr.print_PSNR(dataset, TestContext(), ctx_1, ctx_2, 'DCT')
+    psnr.print_PSNR(dataset, TestContext(), ctx_1, ctx_2, "DCT")
 
 
 def run_PSNR_qf(dataset: np.ndarray, qf_1: int, qf_2: int):
@@ -111,8 +137,10 @@ def run_PSNR_qf(dataset: np.ndarray, qf_1: int, qf_2: int):
     ctx_2 = TestContext()
     ctx_2.quality = qf_2
 
-    print('qf1 vs qf2 : ', qf_1, qf_2)
-    psnr.print_PSNR(dataset, TestContext(), ctx_1, ctx_2, 'qf')
+    print("qf1 vs qf2 : ", qf_1, qf_2)
+    logging.info(f"qf1 vs qf2 : {qf_1}, {qf_2}")
+
+    psnr.print_PSNR(dataset, TestContext(), ctx_1, ctx_2, "qf")
 
 
 def run_PSNR_version(dataset: np.ndarray, v1: str, v2: str):
@@ -121,57 +149,70 @@ def run_PSNR_version(dataset: np.ndarray, v1: str, v2: str):
     ctx_2 = TestContext()
     ctx_2.v_arbitrary = v2
 
-    psnr.print_PSNR(dataset, TestContext(), ctx_1, ctx_2, 'version')
+    psnr.print_PSNR(dataset, TestContext(), ctx_1, ctx_2, "version")
 
 
 def run_decompression_tests(dataset: np.ndarray):
-
-    data_is_color = (dataset.shape[3] == 3)
+    data_is_color = dataset.shape[3] == 3
 
     print("=== Decompression tests ===")
+    logging.info("=== Decompression tests ===")
     output.print_intro(dataset)
 
-    # print("--- baseline ---")
-    # run_baseline(dataset)
+    print("--- baseline ---")
+    logging.info("--- baseline ---")
+    run_baseline(dataset)
 
-    # print("--- DCT methods ---")
-    # print("4:4:4 no upsampling")
-    # run_dct(dataset, ((1, 1), (1, 1), (1, 1)))
-    # if data_is_color:
-    #     run_dct_with_sampling(dataset)
+    print("--- DCT methods ---")
+    logging.info("--- DCT methods ---")
+    print("4:4:4 no upsampling")
+    logging.info("4:4:4 no upsampling")
 
-    # print("--- QUALITY ---")
-    # run_quality(dataset)
-    # if data_is_color:
-    #     print("--- SAMPLING FACTOR ---")
-    #     run_sampling_factor(dataset)
+    run_dct(dataset, ((1, 1), (1, 1), (1, 1)))
+    if data_is_color:
+        run_dct_with_sampling(dataset)
+
+    print("--- QUALITY ---")
+    logging.info("--- QUALITY ---")
+    run_quality(dataset)
+    if data_is_color:
+        print("--- SAMPLING FACTOR ---")
+        logging.info("--- SAMPLING FACTOR ---")
+        run_sampling_factor(dataset)
 
     print("--- MARGIN EFFECTS ---")
+    logging.info("--- MARGIN EFFECTS ---")
     print("4:4:4 no downsampling")
-    run_margin_effects(dataset, [0, 1, 2, 4, 7, 8],
-                       ((1, 1), (1, 1), (1, 1)))
+    logging.info("4:4:4 no downsampling")
+    run_margin_effects(dataset, [0, 1, 2, 4, 7, 8], ((1, 1), (1, 1), (1, 1)))
     if data_is_color:
         run_margin_with_sampling(dataset, [16, 15, 9, 8, 7, 3, 2, 1], 16)
 
-    print('------- PYTHON IMPLEMENTATIONS ----------')
+    print("------- PYTHON IMPLEMENTATIONS ----------")
+    logging.info("------- PYTHON IMPLEMENTATIONS ----------")
     run_python_implementation(dataset)
 
     # decompression PSNR
     print("--- PSNR ---")
-    run_PSNR_dct(dataset, 'JDCT_ISLOW', 'JDCT_IFAST')
-    run_PSNR_dct(dataset, 'JDCT_ISLOW', 'JDCT_FLOAT')
+    logging.info("--- PSNR ---")
+    run_PSNR_dct(dataset, jpeglib.JDCT_ISLOW, jpeglib.JDCT_IFAST)
+    run_PSNR_dct(dataset, jpeglib.JDCT_ISLOW, jpeglib.JDCT_FLOAT)
 
-    print('--------- PSNR: VERSIONS----------')
-    run_PSNR_version(dataset, 'turbo', '9')
-    run_PSNR_version(dataset, '7', '9a')
-    run_PSNR_version(dataset, '6b', '9a')
+    print("--------- PSNR: VERSIONS----------")
+    logging.info("--------- PSNR: VERSIONS----------")
+    run_PSNR_version(dataset, "turbo120", "9")
+    run_PSNR_version(dataset, "turbo210", "turbo120")
+    # run_PSNR_version(dataset, "7", "9a")
+    # run_PSNR_version(dataset, "6b", "9a")
 
-    print('------- PSNR: QUALITY ----------')
-    run_PSNR_qf(dataset, 75, 90)
-    run_PSNR_qf(dataset, 90, 95)
-    run_PSNR_qf(dataset, 95, 100)
+    # print("------- PSNR: QUALITY ----------")
+    # run_PSNR_qf(dataset, 75, 90)
+    # run_PSNR_qf(dataset, 90, 95)
+    # run_PSNR_qf(dataset, 95, 100)
 
 
 # direct execution
 if __name__ == "__main__":
-    raise NotImplementedError("module not intended to be executed directly, please use run.py")
+    raise NotImplementedError(
+        "module not intended to be executed directly, please use run.py"
+    )

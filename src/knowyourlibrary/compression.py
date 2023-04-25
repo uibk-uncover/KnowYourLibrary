@@ -1,4 +1,3 @@
-
 import collections
 import jpeglib
 import numpy as np
@@ -11,7 +10,8 @@ from . import mismatch
 
 
 CompressionTestResults = collections.namedtuple(
-    'CompressionTestResults', ['Y', 'Cb', 'Cr', 'spatial'])
+    "CompressionTestResults", ["Y", "Cb", "Cr", "spatial"]
+)
 
 
 def run_test(dataset: np.ndarray, ctx: TestContext):
@@ -30,11 +30,11 @@ def run_test(dataset: np.ndarray, ctx: TestContext):
 
     # iterate versions
     if channels == 3:
-        images = {'version': [], 'spatial': [], 'Y': [], 'Cb': [], 'Cr': []}
+        images = {"version": [], "spatial": [], "Y": [], "Cb": [], "Cr": []}
     else:
-        images = {'version': [], 'spatial': [], 'Y': []}
+        images = {"version": [], "spatial": [], "Y": []}
     for i, v_compress in enumerate(ctx.versions):
-        fnames = [str(Path(tmp.name) / f'{i}.jpeg') for i in range(N)]
+        fnames = [str(Path(tmp.name) / f"{i}.jpeg") for i in range(N)]
 
         # compress with each version
         if not ctx.compressor:
@@ -48,58 +48,73 @@ def run_test(dataset: np.ndarray, ctx: TestContext):
 
         # decompress with single (arbitrary) version
         with jpeglib.version(ctx.v_arbitrary):
-            dct = [
-                read_jpeg(fname)
-                for j, fname in enumerate(fnames)
-            ]
-            spatial = [
-                decompress_image(fname, ctx)
-                for j, fname in enumerate(fnames)
-            ]
-            images['version'].append(v_compress)
-            images['spatial'].append(np.array([x.spatial for x in spatial]))
-            print(v_compress, spatial[0].spatial.shape)
-            images['Y'].append(np.array([x.Y for x in dct]))
+            dct = [read_jpeg(fname) for j, fname in enumerate(fnames)]
+            spatial = [decompress_image(fname, ctx) for j, fname in enumerate(fnames)]
+            images["version"].append(v_compress)
+            images["spatial"].append(np.array([x.spatial for x in spatial]))
+            # print(v_compress, spatial[0].spatial.shape)
+            images["Y"].append(np.array([x.Y for x in dct]))
             if channels == 3:
-                images['Cb'].append(np.array([x.Cb for x in dct]))
-                images['Cr'].append(np.array([x.Cr for x in dct]))
+                images["Cb"].append(np.array([x.Cb for x in dct]))
+                images["Cr"].append(np.array([x.Cr for x in dct]))
 
     # results to dataframe
     images = pd.DataFrame(images)
 
     # get clusters of equal results
-    def _prepare(df, var): return df[['version', var]].rename(
-        {var: 'x'}, axis=1)
-    clusters_Y = mismatch.get_clusters(_prepare(images, 'Y'))
+    def _prepare(df, var):
+        return df[["version", var]].rename({var: "x"}, axis=1)
+
+    clusters_Y = mismatch.get_clusters(_prepare(images, "Y"))
     if channels == 3:
-        clusters_Cb = mismatch.get_clusters(_prepare(images, 'Cb'))
-        clusters_Cr = mismatch.get_clusters(_prepare(images, 'Cr'))
+        clusters_Cb = mismatch.get_clusters(_prepare(images, "Cb"))
+        clusters_Cr = mismatch.get_clusters(_prepare(images, "Cr"))
     else:
         clusters_Cb = clusters_Cr = None
 
     # get clusters from spatial for control
-    clusters = mismatch.get_clusters(_prepare(images, 'spatial'))
+    clusters = mismatch.get_clusters(_prepare(images, "spatial"))
 
     # return
     return CompressionTestResults(clusters_Y, clusters_Cb, clusters_Cr, clusters)
 
 
 def print_clusters(clusters):
-    print("| Y", clusters.Y)
+    f = open("results/results.txt", "a")
+
+    print(
+        "| Y",
+        clusters.Y,
+    )
     # rgb
     if clusters.Cb is not None and clusters.Cr is not None:
         if mismatch.is_clustering_same(clusters.Cb, clusters.Cr):
-            print("| C*", clusters.Cb)
+            print(
+                "| C*",
+                clusters.Cb,
+            )
         else:
-            print("| Cb", clusters.Cb)
-            print("| Cr", clusters.Cr)
+            print(
+                "| Cb",
+                clusters.Cb,
+            )
+            print(
+                "| Cr",
+                clusters.Cr,
+            )
         if not mismatch.is_clustering_same(clusters.Cb, clusters.spatial):
-            print("| spatial", clusters.spatial)
+            print(
+                "| spatial",
+                clusters.spatial,
+            )
     # grayscale
     else:
         if not mismatch.is_clustering_same(clusters.Y, clusters.spatial):
-            print("| spatial", clusters.spatial)
-    sys.stdout.flush()
+            print(
+                "| spatial",
+                clusters.spatial,
+            )
+    # sys.stdout.flush()
 
 
 def _to_key(cluster_group: Tuple[Tuple[str]]) -> Tuple[Tuple[str]]:
@@ -113,21 +128,22 @@ _joint = collections.OrderedDict()
 
 def add_print_grouped_clusters(clusters, identifier):
     """Call me with clusters and identifier of a call. I will keep track of it and print it nicely for you."""
+    f = open("results/results.txt", "a")
     global _joint
     # is empty
     was_empty = len(_joint) == 0
     # choose channels to add
-    channels = {'Y': clusters.Y, 'spatial': clusters.spatial}
+    channels = {"Y": clusters.Y, "spatial": clusters.spatial}
     if clusters.Cb is not None and clusters.Cr is not None:
         if clusters.Cb == clusters.Cr:
             if clusters.Y != clusters.Cb:
-                channels['C*'] = clusters.Cb
+                channels["C*"] = clusters.Cb
         else:
             if clusters.Y != clusters.Cb:
-                channels['Cb'] = clusters.Cb
+                channels["Cb"] = clusters.Cb
             if clusters.Y != clusters.Cr:
-                channels['Cr'] = clusters.Cr
-    for c in ['Y', 'C*', 'Cb', 'Cr', 'spatial']:
+                channels["Cr"] = clusters.Cr
+    for c in ["Y", "C*", "Cb", "Cr", "spatial"]:
         # do not print
         if c not in channels:
             continue
@@ -135,7 +151,7 @@ def add_print_grouped_clusters(clusters, identifier):
         clust = channels[c]
         clust = _to_key(clust)
         # create channel identifier
-        identifier_c = f'{identifier}:{c}'
+        identifier_c = f"{identifier}:{c}"
         # add to joint
         if clust not in _joint:
             _joint[clust] = [identifier_c]
@@ -145,27 +161,51 @@ def add_print_grouped_clusters(clusters, identifier):
     k1 = next(iter(_joint))
     # print legend
     if was_empty:
-        print("|", k1, ":", end="")
+        print(
+            "|",
+            k1,
+            ":",
+            end="",
+        )
     # print until empty
     while _joint[k1]:
-        print(" ", _joint[k1][0], sep="", end="")
+        print(
+            " ",
+            _joint[k1][0],
+            sep="",
+            end="",
+        )
         _joint[k1] = _joint[k1][1:]
-    sys.stdout.flush()
+    # sys.stdout.flush()
 
 
 def end_print_grouped_clusters():
     """Call me when done with add_print_grouped_clusters."""
+    f = open("results/results.txt", "a")
+
     global _joint
     for k in _joint:
         # skip empty (first)
         if not _joint[k]:
-            print()
+            print(
+                "\n",
+            )
             continue
         # print legend
-        print("|", k, ":", end="")
+        print(
+            "|",
+            k,
+            ":",
+            end="",
+        )
         # print until empty
         while _joint[k]:
-            print(" ", _joint[k][0], sep="", end="")
+            print(
+                " ",
+                _joint[k][0],
+                sep="",
+                end="",
+            )
             _joint[k] = _joint[k][1:]
     _joint = collections.OrderedDict()
-    sys.stdout.flush()
+    # sys.stdout.flush()

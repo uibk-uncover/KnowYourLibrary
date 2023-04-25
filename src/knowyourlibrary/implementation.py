@@ -1,4 +1,3 @@
-
 import cv2
 import jpeglib
 import matplotlib.pyplot as plt
@@ -10,17 +9,27 @@ from typing import List
 class ImageIO:
     """Interface for image i/o classes."""
 
-    def __init__(self, name): self.name = name
-    def compress_rgb(self, x): raise NotImplementedError
-    def compress_grayscale(self, x): raise NotImplementedError
-    def decompress_rgb(self): raise NotImplementedError
-    def decompress_grayscale(self): raise NotImplementedError
+    def __init__(self, name):
+        self.name = name
+
+    def compress_rgb(self, x):
+        raise NotImplementedError
+
+    def compress_grayscale(self, x):
+        raise NotImplementedError
+
+    def decompress_rgb(self):
+        raise NotImplementedError
+
+    def decompress_grayscale(self):
+        raise NotImplementedError
 
 
 class PIL_IO(ImageIO):
     """i/o implementation using pillow"""
 
-    def compress_rgb(self, x): Image.fromarray(x).save(self.name)
+    def compress_rgb(self, x):
+        Image.fromarray(x).save(self.name)
 
     def compress_grayscale(self, x):
         # correct
@@ -31,20 +40,23 @@ class PIL_IO(ImageIO):
             im = Image.fromarray(x[:, :, 0])
         # colored
         else:
-            im = Image.fromarray(x, 'L')
+            im = Image.fromarray(x, "L")
         im.save(self.name)
 
-    def decompress_rgb(self): return np.array(Image.open(self.name))
+    def decompress_rgb(self):
+        return np.array(Image.open(self.name))
+
     def decompress_grayscale(self):
         x = np.array(Image.open(self.name))
         x = np.expand_dims(x, 2)
         return x
 
+
 class cv2_IO(ImageIO):
     """i/o implementation using opencv"""
 
-    def compress_rgb(self, x): cv2.imwrite(
-        self.name, cv2.cvtColor(x, cv2.COLOR_BGR2RGB))
+    def compress_rgb(self, x):
+        cv2.imwrite(self.name, cv2.cvtColor(x, cv2.COLOR_BGR2RGB))
 
     def compress_grayscale(self, x):
         # correct
@@ -65,11 +77,15 @@ class cv2_IO(ImageIO):
         x = np.expand_dims(x, 2)
         return x
 
+
 class plt_IO(ImageIO):
     """i/o implementation using matplotlib"""
 
-    def compress_rgb(self, x): plt.imsave(self.name, x)
-    def compress_grayscale(self, x): plt.imsave(self.name, x[:, :, 0], cmap='gray')
+    def compress_rgb(self, x):
+        plt.imsave(self.name, x)
+
+    def compress_grayscale(self, x):
+        plt.imsave(self.name, x[:, :, 0], cmap="gray")
 
     def decompress_rgb(self):
         x = plt.imread(self.name)
@@ -79,6 +95,7 @@ class plt_IO(ImageIO):
         x = plt.imread(self.name)
         x = np.expand_dims(x, 2)
         return x
+
 
 # libjpeg
 class libjpeg_IO(ImageIO):
@@ -94,73 +111,70 @@ class libjpeg_IO(ImageIO):
     def compress_grayscale(self, x):
         with jpeglib.version(self.version):
             im = jpeglib.from_spatial(x)
-            im.jpeg_color_space = jpeglib.Colorspace('JCS_GRAYSCALE')
+            im.jpeg_color_space = jpeglib.Colorspace(jpeglib.JCS_GRAYSCALE)
             im.write_spatial(self.name)
 
     def decompress_rgb(self):
         with jpeglib.version(self.version):
             im = jpeglib.read_spatial(
-                self.name, flags=['+DO_FANCY_UPSAMPLING', '+DO_BLOCK_SMOOTHING'])
+                self.name, flags=["+DO_FANCY_UPSAMPLING", "+DO_BLOCK_SMOOTHING"]
+            )
             return im.spatial
+
     def decompress_grayscale(self):
         with jpeglib.version(self.version):
             img = jpeglib.read_spatial(
-                self.name, out_color_space='JCS_GRAYSCALE',
-                flags=['+DO_FANCY_UPSAMPLING', '+DO_BLOCK_SMOOTHING'])
+                self.name,
+                out_color_space=jpeglib.JCS_GRAYSCALE,
+                flags=["+DO_FANCY_UPSAMPLING", "+DO_BLOCK_SMOOTHING"],
+            )
             return img.spatial
 
+
 class libjpeg6b_IO(libjpeg_IO):
-    def __init__(self, name): super().__init__(name, '6b')
+    def __init__(self, name):
+        super().__init__(name, "6b")
 
 
 class libjpeg8d_IO(libjpeg_IO):
-    def __init__(self, name): super().__init__(name, '8d')
+    def __init__(self, name):
+        super().__init__(name, "8d")
 
 
 class libjpeg9d_IO(libjpeg_IO):
-    def __init__(self, name): super().__init__(name, '9d')
+    def __init__(self, name):
+        super().__init__(name, "9d")
 
 
 class libjpeg9e_IO(libjpeg_IO):
-    def __init__(self, name): super().__init__(name, '9e')
+    def __init__(self, name):
+        super().__init__(name, "9e")
 
 
 class libjpegturbo_IO(libjpeg_IO):
-    def __init__(self, name): super().__init__(name, 'turbo210')
+    def __init__(self, name):
+        super().__init__(name, "turbo210")
 
 
 def io_compressor_rgb(dataset, fnames, version, ctx):
     # parse
     impl = ctx.versions[version]
     # compress
-    [
-        impl(fnames[i]).compress_rgb(dataset[i])
-        for i, fname in enumerate(fnames)
-    ]
+    [impl(fnames[i]).compress_rgb(dataset[i]) for i, fname in enumerate(fnames)]
 
 
 def io_compressor_grayscale(dataset, fnames, version, ctx):
     # parse
     impl = ctx.versions[version]
     # compress
-    [
-        impl(fnames[i]).compress_grayscale(dataset[i])
-        for i, fname in enumerate(fnames)
-    ]
+    [impl(fnames[i]).compress_grayscale(dataset[i]) for i, fname in enumerate(fnames)]
 
 
 def io_decompressor_rgb(fnames: List[str], version, ctx) -> np.ndarray:
-
     impl = ctx.versions[version]
-    return np.stack([
-        impl(fname).decompress_rgb()
-        for fname in fnames
-    ], axis=0)
+    return np.stack([impl(fname).decompress_rgb() for fname in fnames], axis=0)
+
 
 def io_decompressor_grayscale(fnames: List[str], version, ctx) -> np.ndarray:
-
     impl = ctx.versions[version]
-    return np.stack([
-        impl(fname).decompress_grayscale()
-        for fname in fnames
-    ], axis=0)
+    return np.stack([impl(fname).decompress_grayscale() for fname in fnames], axis=0)
